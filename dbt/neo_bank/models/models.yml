@@ -1,0 +1,28 @@
+version: 2
+
+models:
+
+  - name: staging
+    description: >
+      Staging models prepare the raw NeoBank source data for analysis.
+      This layer standardises column names, applies consistent naming conventions,
+      corrects data types, preserves the original data grain, documents business
+      meaning, and performs data quality validation through tests such as
+      uniqueness, null checks, accepted values and relationship integrity.
+      No business logic or aggregations are applied in this layer.
+
+  - name: intermediate
+    description: >
+      Intermediate models combine staging models into reusable analytical datasets.
+      This layer applies business logic by joining users, transactions,
+      notifications and devices, derives analytical metrics and behavioural
+      features, and creates reusable models that support engagement, retention
+      and churn analysis while avoiding duplicated transformation logic.
+
+  - name: marts
+    description: >
+      Mart models provide business-ready datasets designed for reporting and
+      stakeholder consumption. This layer organises analytical outputs around
+      key business themes, including user engagement, retention, churn,
+      transaction behaviour and customer segmentation, and serves as the
+      foundation for dashboards and business insights.

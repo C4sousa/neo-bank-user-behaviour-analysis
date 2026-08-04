@@ -1,0 +1,14 @@
+# dbt generated files
+target/
+dbt_packages/
+logs/
+
+dbt/neo_bank/target/
+dbt/neo_bank/logs/
+dbt/neo_bank/dbt_packages/
+
+# Environment
+.env
+
+# macOS
+.DS_Store

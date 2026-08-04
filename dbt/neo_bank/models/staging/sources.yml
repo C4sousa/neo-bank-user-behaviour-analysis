@@ -1,0 +1,65 @@
+version: 2
+
+sources:
+
+  - name: neobank
+
+    database: le-wagon-da-502302
+
+    schema: NeoBank
+
+    description: >
+      Raw NeoBank dataset containing customer information,
+      financial transactions, notification events and device associations.
+
+    tables:
+
+      - name: users
+
+        description: >
+          Raw user table containing customer demographics,
+          subscription plans and notification preferences.
+
+        columns:
+
+          - name: user_id
+
+            description: Unique identifier for each user.
+
+            tests:
+
+              - unique
+
+              - not_null
+
+
+      - name: transactions
+
+        description: >
+          Raw transaction table containing financial activity,
+          transaction states and merchant information.
+
+        columns:
+
+          - name: transaction_id
+
+            description: Unique identifier for each transaction.
+
+            tests:
+
+              - unique
+
+              - not_null
+
+
+      - name: notifications
+
+        description: >
+          Raw notification events sent to users through different channels.
+
+
+      - name: devices
+
+        description: >
+          Raw device information containing the device platform
+          associated with each user.
