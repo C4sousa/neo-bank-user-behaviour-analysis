@@ -1,7 +1,3 @@
-{{ config(
-    tags = ['staging']
-) }}
-
 select
 
     reason,

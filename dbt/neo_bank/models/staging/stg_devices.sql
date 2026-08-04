@@ -1,7 +1,3 @@
-{{ config(
-    tags = ['staging']
-) }}
-
 select
 
     string_field_0 as device_platform,
