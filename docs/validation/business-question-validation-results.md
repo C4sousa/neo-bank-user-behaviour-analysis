@@ -6,8 +6,6 @@ This document records the validation performed for each business question before
 
 The objective is to confirm that the available dataset contains the required tables, columns, and relationships needed to answer each business question.
 
-Each question is classified as:
-
 ## Legend
 
 ### Validation Status
@@ -95,7 +93,7 @@ The available data supports analysis of transaction frequency as a behavioural m
 
 | # | Business Question | Can Answer? | Why | Users | Transactions | Notifications | Devices | Key Columns | Assumptions & Limitations | Conclusion |
 |---|-------------------|:-----------:|------|:-----:|:------------:|:-------------:|:-------:|-------------|---------------------------|------------|
-| 2 | Does Crypto adoption influence user engagement? | 🟢 Yes | Crypto adoption can be compared with user transaction behaviour. | 🟢 | 🟢 | ⚪ | ⚪ | user_id<br>user_settings_crypto_unlocked<br>created_date | Crypto adoption is represented by a binary flag (`user_settings_crypto_unlocked`). Engagement is inferred from transaction behaviour rather than direct usage metrics. | 🟢 Ready |
+| 2 | Does Crypto adoption influence user engagement? | 🟢 Yes | Crypto adoption can be compared with user transaction behaviour. | 🟢 | 🟢 | ⚪ | ⚪ | user_id<br>user_settings_crypto_unlocked<br>created_date | Crypto adoption is represented by the binary field user_settings_crypto_unlocked. The dataset indicates whether Crypto has been unlocked but does not record actual Crypto feature usage. Engagement is measured using the project's definition of regular transaction behaviour. | 🟢 Ready |
 
 ---
 
@@ -155,16 +153,16 @@ Does Premium plan adoption influence user engagement?
 
 | # | Business Question | Can Answer | Why | Users | Transactions | Notifications | Devices | Key Columns | Assumptions & Limitations | Conclusion |
 |---|-------------------|------------|-----|:-----:|:------------:|:-------------:|:-------:|-------------|---------------------------|------------|
-| 3 | Does Premium plan adoption influence user engagement? | 🟢 Yes | User subscription plan can be linked to transaction behaviour. | 🟢 | 🟢 | ⚪ | ⚪ | user_id, plan, created_date, amount_usd, transactions_state | Engagement is inferred from transaction behaviour rather than direct interaction metrics. | 🟢 Ready |
+| 3 | Does Premium plan adoption influence user engagement? | 🟢 Yes | User subscription plan can be linked to transaction behaviour. | 🟢 | 🟢 | ⚪ | ⚪ | user_id, plan, created_date, amount_usd, transactions_state | Engagement is measured using the project's definition of regular transaction behaviour. | 🟢 Ready |
 
 ## Validation Evidence
 
-### Tables verified
+### Tables Verified
 
 - ✅ users
 - ✅ transactions
 
-### Columns verified
+### Columns Verified
 
 Users
 
@@ -179,15 +177,14 @@ Transactions
 - amount_usd
 - transactions_state
 
-### Validation queries executed
+## Validation Findings
 
-Required columns verified.
+The following checks were performed:
 
-Users are classified into STANDARD and PREMIUM subscription plans.
-
-Transactions are linked to users through **user_id**.
-
-The relationship enables comparison of engagement behaviour across subscription plans.
+- Required columns verified.
+- Users can be classified by subscription plan.
+- Transactions are linked to users through **user_id**.
+- The relationship enables comparison of engagement behaviour across subscription plans.
 
 ### Decision
 
@@ -200,22 +197,24 @@ The available data supports analysis of whether Premium plan adoption influences
 
 ## Business Question
 
-Does notification frequency influence user engagement?
+**Does notification frequency influence user engagement?**
 
-| # | Business Question | Can Answer | Why | Users | Transactions | Notifications | Devices | Key Columns | Assumptions & Limitations | Conclusion |
-|---|-------------------|------------|-----|:-----:|:------------:|:-------------:|:-------:|-------------|---------------------------|------------|
-| 4 | Does notification frequency influence user engagement? | 🟡 Partial | Notification delivery history is available, but user interaction with notifications is not recorded. | ⚪ | 🟢 | 🟢 | ⚪ | user_id, created_date, reason, channel, status | Engagement with notifications cannot be measured because open and click events are unavailable. Notification frequency is based only on notifications sent. | 🟡 Partial |
+| # | Business Question | Can Answer? | Why | Users | Transactions | Notifications | Devices | Key Columns | Assumptions & Limitations | Conclusion |
+|---|-------------------|:-----------:|------|:-----:|:------------:|:-------------:|:-------:|-------------|---------------------------|------------|
+| 4 | Does notification frequency influence user engagement? | 🟡 Partial | Notification delivery history can be linked to transaction behaviour, but user interaction with notifications is not recorded. | ⚪ | 🟢 | 🟢 | ⚪ | user_id<br>created_date<br>reason<br>channel<br>status | Engagement with notifications cannot be measured because open and click events are unavailable. Notification exposure is measured using notifications sent because the dataset does not contain notification interaction events (opens or clicks). | 🟡 Partial |
+
+---
 
 ## Validation Evidence
 
-### Tables verified
+### Tables Verified
 
 - ✅ transactions
 - ✅ notifications
 
-### Columns verified
+### Columns Verified
 
-Notifications
+#### notifications
 
 - user_id
 - created_date
@@ -223,26 +222,37 @@ Notifications
 - channel
 - status
 
-Transactions
+#### transactions
 
 - user_id
 - created_date
 
-### Validation queries executed
+---
 
-Required columns verified.
+## Validation Findings
 
-Notifications can be linked to users through **user_id**.
+The following checks were performed:
 
-Notification history records when notifications were sent and why they were sent.
+- Required columns verified.
+- Notifications can be linked to users through **user_id**.
+- Notification history records when notifications were sent and why they were sent.
+- Notification frequency can be calculated for each user.
+- No notification interaction events (such as opens or clicks) are available.
 
-No notification interaction events (such as opens or clicks) are available.
+### Evidence
 
-### Decision
+- Users receiving notifications: **18,953**
+- Average notifications per user: **6.43**
+- Minimum notifications per user: **1**
+- Maximum notifications per user: **289**
 
-🟡 Partial
+---
 
-The available data supports analysis of notification frequency based on delivery history, but it cannot measure how users interacted with notifications.
+## Decision
+
+🟡 **Partial**
+
+The available data supports analysing notification frequency as a measure of notification exposure, but it cannot determine whether users engaged with those notifications.
 
 ---
 
@@ -256,11 +266,11 @@ Do merchant spending categories influence user engagement?
 
 | # | Business Question | Can Answer | Why | Users | Transactions | Notifications | Devices | Key Columns | Assumptions & Limitations | Conclusion |
 |---|-------------------|------------|------|:-----:|:------------:|:-------------:|:-------:|-------------|---------------------------|------------|
-| 5 | Do merchant spending categories influence user engagement? | 🟢 Yes | Merchant spending categories classify where users spend money, enabling behavioural analysis across different merchant types, enabling behavioural analysis by spending type. | ⚪ | 🟢 | ⚪ | ⚪ | user_id, ea_merchant_mcc, amount_usd, created_date | Merchant category is available for 57.71% of transactions, so analyses using this field will exclude transactions where the merchant category is missing. | 🟢 Ready |
+| 5 | Do merchant spending categories influence user engagement? | 🟢 Yes | Merchant spending categories classify where users spend money, enabling behavioural analysis across different merchant types. | ⚪ | 🟢 | ⚪ | ⚪ | user_id, ea_merchant_mcc, amount_usd, created_date | Merchant category is available for 57.71% of transactions, so analyses using this field will exclude transactions where the merchant category is missing. | 🟢 Ready |
 
 ## Validation Evidence
 
-### Tables verified
+### Tables Verified
 
 - ✅ transactions
 
@@ -271,13 +281,13 @@ Do merchant spending categories influence user engagement?
 - amount_usd
 - created_date
 
-### Validation queries executed
+## Validation Findings
 
-The required merchant category field exists.
+The following checks were performed:
 
-The dataset contains **664 distinct merchant categories**.
-
-Merchant category is populated for **1,581,417 of 2,740,075 transactions (57.71%)**, providing sufficient coverage for merchant-based behavioural analysis.
+- The required merchant category field exists.
+- The dataset contains **664 distinct merchant categories**.
+- Merchant category is populated for **1,581,417 of 2,740,075 transactions (57.71%)**, providing sufficient coverage for merchant-based behavioural analysis.
 
 ### Decision
 
@@ -298,7 +308,7 @@ Merchant category provides enough coverage and variation to analyse user spendin
 
 | # | Business Question | Can Answer? | Why | Users | Transactions | Notifications | Devices | Key Columns | Assumptions & Limitations | Conclusion |
 |---|-------------------|:-----------:|------|:-----:|:------------:|:-------------:|:-------:|-------------|---------------------------|------------|
-| 6 | How does user engagement evolve over time across different countries? | 🟢 Yes | User country and transaction history allow engagement to be analysed across countries over time. | 🟢 | 🟢 | ⚪ | ⚪ | user_id<br>country<br>created_date<br>transaction_id | Country is recorded at user level and is assumed to remain stable throughout the analysis period. User engagement is inferred from transaction behaviour. | 🟢 Ready |
+| 6 | How does user engagement evolve over time across different countries? | 🟢 Yes | User country and transaction history allow engagement to be analysed across countries over time. | 🟢 | 🟢 | ⚪ | ⚪ | user_id<br>country<br>created_date<br>transaction_id | Country is recorded at user level and is assumed to remain stable throughout the analysis period. User engagement is measured using the project's definition of regular transaction behaviour. | 🟢 Ready |
 
 ---
 
@@ -363,7 +373,7 @@ The available data supports analysing how user engagement evolves over time acro
 
 | # | Business Question | Can Answer? | Why | Users | Transactions | Notifications | Devices | Key Columns | Assumptions & Limitations | Conclusion |
 |---|-------------------|:-----------:|------|:-----:|:------------:|:-------------:|:-------:|-------------|---------------------------|------------|
-| 7 | Does device brand influence user engagement? | 🟡 Partial | Device information exists but column names require validation before analysis. | ⚪ | 🟢 | ⚪ | 🟡 | string_field_0<br>string_field_1 | The device table appears to contain device brand and user_id, but the columns are unnamed and require confirmation during the staging phase. | 🟡 Partial |
+| 7 | Does device brand influence user engagement? | 🟢 Yes | Device brand can be linked to transaction behaviour through user_id. | ⚪ | 🟢 | ⚪ | 🟢 | string_field_0<br>string_field_1<br>user_id<br>created_date | The devices table uses generic column names (string_field_0, string_field_1), but validation confirmed these represent device brand and user identifier. The fields will be renamed during staging. | 🟢 Ready |
 
 ---
 
@@ -378,8 +388,8 @@ The available data supports analysing how user engagement evolves over time acro
 
 #### devices
 
-- string_field_0
-- string_field_1
+- string_field_0 (device brand)
+- string_field_1 (user_id)
 
 #### transactions
 
@@ -393,23 +403,24 @@ The available data supports analysing how user engagement evolves over time acro
 The following checks were performed:
 
 - Required tables exist.
-- Device records exist.
-- Device table contains one record per user.
-- Preview indicates **string_field_0** contains device brands.
-- Preview indicates **string_field_1** contains user IDs.
-- Column names require technical validation before modelling.
+- Device brands are populated.
+- Device records can be linked to transactions using **user_id**.
+- Device brand distribution has been validated.
 
 ### Evidence
 
-- Device records: **19,431**
+- Android: **9,714**
+- Apple: **9,673**
+- Unknown: **43**
+- Header row imported as data: **1** (to be removed during staging)
 
 ---
 
 ## Decision
 
-🟡 **Partial**
+🟢 **Ready**
 
-The available data appears sufficient to analyse device brand, but the device table should first be validated and renamed during the staging phase.
+The available data supports analysing whether user engagement differs between device brands after standard staging removes the imported header row.
 
 ---
 
@@ -423,7 +434,7 @@ The available data appears sufficient to analyse device brand, but the device ta
 
 | # | Business Question | Can Answer? | Why | Users | Transactions | Notifications | Devices | Key Columns | Assumptions & Limitations | Conclusion |
 |---|-------------------|:-----------:|------|:-----:|:------------:|:-------------:|:-------:|-------------|---------------------------|------------|
-| 8 | Does transaction frequency influence user retention? | 🟢 Yes | Transaction history allows users' activity to be measured over time. | 🟢 | 🟢 | ⚪ | ⚪ | user_id<br>created_date<br>amount_usd<br>transactions_state | Retention is inferred from continued transaction activity because no explicit retention flag exists. | 🟢 Ready |
+| 8 | Does transaction frequency influence user retention? | 🟢 Yes | Transaction history allows users' activity to be measured over time. | 🟢 | 🟢 | ⚪ | ⚪ | user_id<br>created_date<br>amount_usd<br>transactions_state | Retention is measured using the project's definition of continued transaction activity over time. The dataset does not contain an explicit retention label. | 🟢 Ready |
 
 ---
 
@@ -486,7 +497,7 @@ The available data supports measuring user retention using continued transaction
 
 | # | Business Question | Can Answer? | Why | Users | Transactions | Notifications | Devices | Key Columns | Assumptions & Limitations | Conclusion |
 |---|-------------------|:-----------:|------|:-----:|:------------:|:-------------:|:-------:|-------------|---------------------------|------------|
-| 9 | Does Crypto adoption influence user retention? | 🟢 Yes | Crypto adoption can be linked to users' transaction activity over time. | 🟢 | 🟢 | ⚪ | ⚪ | user_id<br>user_settings_crypto_unlocked<br>created_date | Retention is inferred from continued transaction activity because no explicit retention flag exists. Crypto adoption is represented by a binary flag. | 🟢 Ready |
+| 9 | Does Crypto adoption influence user retention? | 🟢 Yes | Crypto adoption can be linked to users' transaction activity over time. | 🟢 | 🟢 | ⚪ | ⚪ | user_id<br>user_settings_crypto_unlocked<br>created_date | Retention is measured using the project's definition of continued transaction activity over time. The dataset does not contain an explicit retention label. Crypto adoption is represented by a binary flag. | 🟢 Ready |
 
 ---
 
@@ -549,7 +560,7 @@ The available data supports analysis of whether Crypto adoption influences user 
 
 | # | Business Question | Can Answer? | Why | Users | Transactions | Notifications | Devices | Key Columns | Assumptions & Limitations | Conclusion |
 |---|-------------------|:-----------:|------|:-----:|:------------:|:-------------:|:-------:|-------------|---------------------------|------------|
-| 10 | Does Premium plan adoption influence user retention? | 🟢 Yes | Subscription plan can be linked to users' transaction activity over time. | 🟢 | 🟢 | ⚪ | ⚪ | user_id<br>plan<br>created_date | Retention is inferred from continued transaction activity because no explicit retention flag exists. | 🟢 Ready |
+| 10 | Does Premium plan adoption influence user retention? | 🟢 Yes | Subscription plan can be linked to users' transaction activity over time. | 🟢 | 🟢 | ⚪ | ⚪ | user_id<br>plan<br>created_date | Retention is measured using the project's definition of continued transaction activity over time. The dataset does not contain an explicit retention label. | 🟢 Ready |
 
 ---
 
@@ -675,7 +686,7 @@ The dataset does not contain successful referrals, so this business question can
 
 | # | Business Question | Can Answer? | Why | Users | Transactions | Notifications | Devices | Key Columns | Assumptions & Limitations | Conclusion |
 |---|-------------------|:-----------:|------|:-----:|:------------:|:-------------:|:-------:|-------------|---------------------------|------------|
-| 12 | Does notification frequency influence user retention? | 🟢 Yes | Notification history can be linked to user retention behaviour. | ⚪ | 🟢 | 🟢 | ⚪ | user_id<br>created_date<br>reason<br>channel<br>status | Notification exposure is measured from notifications sent rather than user interactions. | 🟢 Ready |
+| 12 | Does notification frequency influence user retention? | 🟢 Yes | Notification history can be linked to user retention behaviour. | ⚪ | 🟢 | 🟢 | ⚪ | user_id<br>created_date<br>reason<br>channel<br>status | Notification exposure is measured from notifications sent rather than user interactions. Retention is measured using the project's definition of continued transaction activity over time. | 🟢 Ready |
 
 ---
 
@@ -711,7 +722,7 @@ The following checks were performed:
 - Required columns exist.
 - Notifications can be linked to users.
 - Retention can be calculated from transaction history.
-- Notification frequency can be measured for each user.
+- Notification frequency can be calculated for each user.
 
 ### Evidence
 
@@ -738,7 +749,7 @@ The available data supports analysing whether notification frequency is associat
 
 | # | Business Question | Can Answer? | Why | Users | Transactions | Notifications | Devices | Key Columns | Assumptions & Limitations | Conclusion |
 |---|-------------------|:-----------:|------|:-----:|:------------:|:-------------:|:-------:|-------------|---------------------------|------------|
-| 13 | Do failed or declined transactions influence churn? | 🟢 Yes | Transaction states allow unsuccessful transactions to be identified and compared with user retention behaviour. | ⚪ | 🟢 | ⚪ | ⚪ | user_id<br>transactions_state<br>created_date | Churn is inferred from transaction inactivity because no explicit churn flag exists. | 🟢 Ready |
+| 13 | Do failed or declined transactions influence churn? | 🟢 Yes | Transaction states allow unsuccessful transactions to be identified and compared against the project's churn definition based on transaction inactivity. | ⚪ | 🟢 | ⚪ | ⚪ | user_id<br>transactions_state<br>created_date | Churn is measured using the project's definition of transaction inactivity during the observation period. The dataset does not contain an explicit churn label. The dataset does not contain an explicit churn label. | 🟢 Ready |
 
 ---
 
@@ -766,7 +777,7 @@ The following checks were performed:
 - Required columns exist.
 - Failed, declined and other transaction states are available.
 - Users can be grouped according to unsuccessful transaction history.
-- Churn proxy can be calculated using transaction dates.
+- The project's churn metric can be measured using each user's transaction history.
 
 ### Evidence
 
@@ -779,7 +790,12 @@ Transaction states include:
 - PENDING
 - CANCELLED
 
-Users with failed or declined transactions can therefore be identified.
+Additional validation:
+
+- Users with transaction history: **18,766**
+- Average transactions per active user: **146.0**
+- Minimum transactions per user: **1**
+- Maximum transactions per user: **5,285**
 
 ---
 
@@ -787,9 +803,12 @@ Users with failed or declined transactions can therefore be identified.
 
 🟢 **Ready**
 
-The available data supports analysing whether unsuccessful transactions are associated with churn.
+The available data supports analysing whether unsuccessful transaction history is associated with higher churn risk using the project's churn definition.
 
 ---
+
+---
+
 
 # Question 14
 
@@ -799,7 +818,7 @@ The available data supports analysing whether unsuccessful transactions are asso
 
 | # | Business Question | Can Answer? | Why | Users | Transactions | Notifications | Devices | Key Columns | Assumptions & Limitations | Conclusion |
 |---|-------------------|:-----------:|------|:-----:|:------------:|:-------------:|:-------:|-------------|---------------------------|------------|
-| 14 | Do specific transaction types influence churn? | 🔴 No | Transaction types exist, but no validated churn outcome currently exists. | ⚪ | 🟢 | ⚪ | ⚪ | user_id<br>transactions_type<br>created_date | Transaction types are available, but churn is only a proposed proxy and has not yet been defined or validated. | 🔴 Not Ready |
+| 14 | Do specific transaction types influence churn? | 🟢 Yes | Transaction types can be linked to users' transaction history to evaluate their relationship with the project's defined churn metric. | ⚪ | 🟢 | ⚪ | ⚪ | user_id<br>transactions_type<br>created_date | Churn is measured using the project's definition of transaction inactivity during the observation period. | 🟢 Ready |
 
 ---
 
@@ -827,7 +846,7 @@ The following checks were performed:
 - Required columns exist.
 - Multiple transaction types are available.
 - Users can be grouped by transaction type.
-- No validated churn variable currently exists.
+- Transaction history contains the information required to calculate the project's defined churn metric.
 
 ### Evidence
 
@@ -844,15 +863,24 @@ Major transaction types include:
 - REFUND
 - TAX
 
+Additional validation:
+
+- Users with transaction history: **18,766**
+- Average transactions per active user: **146.0**
+- Maximum transactions observed: **5,285**
+
 ---
 
 ## Decision
 
-🔴 **Not Ready**
+🟢 **Ready**
 
-Transaction types are available, but a validated churn definition is required before this business question can be answered.
+The available data supports analysing whether different transaction types are associated with higher churn risk using the project's defined churn metric.
 
 ---
+
+---
+
 
 # Question 15
 
@@ -862,7 +890,7 @@ Transaction types are available, but a validated churn definition is required be
 
 | # | Business Question | Can Answer? | Why | Users | Transactions | Notifications | Devices | Key Columns | Assumptions & Limitations | Conclusion |
 |---|-------------------|:-----------:|------|:-----:|:------------:|:-------------:|:-------:|-------------|---------------------------|------------|
-| 15 | Does country influence user churn? | 🟢 Yes | User country can be linked to transaction history to compare churn behaviour across markets. | 🟢 | 🟢 | ⚪ | ⚪ | user_id<br>country<br>created_date | Churn is inferred from transaction inactivity because no churn indicator exists. | 🟢 Ready |
+| 15 | Does country influence user churn? | 🟢 Yes | User country can be linked to transaction history to compare the project's churn metric across countries. | 🟢 | 🟢 | ⚪ | ⚪ | user_id<br>country<br>created_date | Churn is measured using the project's definition of transaction inactivity during the observation period. The dataset does not contain an explicit churn label. Country is assumed to remain stable throughout the observation period. | 🟢 Ready |
 
 ---
 
@@ -896,13 +924,15 @@ The following checks were performed:
 - Required columns exist.
 - Users can be grouped by country.
 - Transactions can be linked using **user_id**.
-- Retention and churn proxies can be calculated using transaction history.
+- The project's churn metric can be calculated using transaction history.
 
 ### Evidence
 
 - Countries represented: **41**
 - Largest market: **GB (6,315 users)**
-- Transaction history spans **500 days**, enabling cross-country behavioural comparisons.
+- Transaction period: **2018-01-01 to 2019-05-16 (500 days)**
+- Users with transaction history: **18,766**
+- Average transactions per active user: **146.0**
 
 ---
 
@@ -910,4 +940,4 @@ The following checks were performed:
 
 🟢 **Ready**
 
-The available data supports analysing whether churn differs across countries.
+The available data supports analysing whether churn differs across countries using the project's defined churn metric.
