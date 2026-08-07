@@ -19,12 +19,12 @@ select
     num_successful_referrals,
 
     cast(user_settings_crypto_unlocked as int64)
-        as user_settings_crypto_unlocked,
+        as crypto_enabled,
 
     cast(attributes_notifications_marketing_push as int64)
-        as attributes_notifications_marketing_push,
+        as marketing_push_enabled,
 
     cast(attributes_notifications_marketing_email as int64)
-        as attributes_notifications_marketing_email
+        as marketing_email_enabled
 
 from {{ source('neobank', 'users') }}
