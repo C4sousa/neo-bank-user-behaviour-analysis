@@ -185,28 +185,24 @@ models:
 
 
 
-- name: int_user_activity
+  - name: int_user_activity
 
-  description: >
-    Reusable analytical user activity model containing one record per user.
-    This intermediate model aggregates transaction and notification activity
-    into a reusable activity summary for downstream KPI models and business
-    marts used to analyse engagement, retention and churn.
+    description: >
+      Reusable analytical user activity model containing one record per
+      user. This intermediate model aggregates transaction and notification
+      behaviour into reusable activity metrics that support downstream KPI
+      calculations and business marts for engagement, retention and churn.
 
-  config:
+    config:
+      contract:
+        enforced: true
 
-    contract:
-
-      enforced: true
-
-  columns:
+    columns:
 
     - name: user_id
-
       description: >
         Unique identifier for each NeoBank user.
-        Acts as the primary key of the model and uniquely identifies
-        each user's activity summary.
+        Acts as the primary key of the activity model.
 
       data_type: string
 
@@ -215,78 +211,62 @@ models:
         - not_null
 
     - name: first_transaction_at
-
       description: >
         Timestamp of the user's first recorded transaction.
-        Used to analyse onboarding and activity timelines.
 
       data_type: timestamp
 
     - name: last_transaction_at
-
       description: >
-        Timestamp of the user's most recent transaction.
-        Used when calculating activity recency, retention and churn.
+        Timestamp of the user's most recent recorded transaction.
 
       data_type: timestamp
 
     - name: total_transactions
-
       description: >
-        Total number of transactions performed by the user,
-        regardless of transaction outcome.
+        Total number of transactions performed by the user.
 
       data_type: int64
 
     - name: successful_transactions
-
       description: >
-        Number of successfully completed transactions performed
-        by the user.
+        Number of transactions whose transaction_state equals COMPLETED.
 
       data_type: int64
 
     - name: failed_transactions
-
       description: >
-        Number of failed or declined transactions performed
-        by the user.
+        Number of transactions whose transaction_state equals FAILED or DECLINED.
 
       data_type: int64
 
     - name: total_transaction_amount
-
       description: >
-        Total monetary value of all user transactions expressed
-        in US dollars.
+        Total monetary value (USD) of all transactions performed by the user.
 
       data_type: float64
 
     - name: first_notification_at
-
       description: >
         Timestamp of the first notification received by the user.
 
       data_type: timestamp
 
     - name: last_notification_at
-
       description: >
         Timestamp of the most recent notification received by the user.
 
       data_type: timestamp
 
     - name: total_notifications
-
       description: >
         Total number of notifications received by the user.
 
       data_type: int64
 
     - name: successful_notifications
-
       description: >
-        Number of successfully delivered notifications received
-        by the user.
+        Number of notifications successfully delivered
+        (status = 'SENT').
 
       data_type: int64
