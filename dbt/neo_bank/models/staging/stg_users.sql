@@ -1,3 +1,6 @@
+-- Standardises the Users source for downstream analytical modelling.
+-- Business logic is intentionally kept out of staging.
+
 select
 
     user_id,
@@ -18,8 +21,8 @@ select
 
     num_successful_referrals,
 
-    cast(user_settings_crypto_unlocked as int64)
-        as crypto_enabled,
+    -- Convert source flag to a consistent numeric representation.
+    cast(user_settings_crypto_unlocked as int64) as crypto_enabled,
 
     cast(attributes_notifications_marketing_push as int64)
         as marketing_push_enabled,

@@ -1,65 +1,71 @@
 version: 2
 
+# Source documentation
+#
+# This file documents the raw NeoBank data sources used by the dbt project.
+# It defines where the raw data comes from, what each source table represents,
+# and basic integrity checks for key identifiers.
+#
+# Business logic and analytical transformations are applied in downstream
+# staging and intermediate models.
+
 sources:
 
   - name: neobank
-
     database: le-wagon-da-502302
-
     schema: NeoBank
 
     description: >
-      Raw NeoBank dataset containing customer information,
-      financial transactions, notification events and device associations.
+      Raw NeoBank data used as the source for the analytical transformation
+      pipeline.
 
     tables:
 
       - name: users
 
         description: >
-          Raw user table containing customer demographics,
-          subscription plans and notification preferences.
+          Raw user-level data containing account information, demographics,
+          subscription plans, referrals and user settings.
 
         columns:
 
           - name: user_id
-
-            description: Unique identifier for each user.
+            description: >
+              Unique identifier for each user.
 
             tests:
-
               - unique
-
               - not_null
 
 
       - name: transactions
 
         description: >
-          Raw transaction table containing financial activity,
-          transaction states and merchant information.
+          Raw transaction-level data containing financial activity,
+          transaction states, transaction types and merchant information.
 
         columns:
 
           - name: transaction_id
-
-            description: Unique identifier for each transaction.
+            description: >
+              Unique identifier for each transaction.
 
             tests:
-
               - unique
-
               - not_null
 
 
       - name: notifications
 
         description: >
-          Raw notification events sent to users through different channels.
+          Raw notification events associated with users and their
+          communication channels.
 
+        columns:
 
-      - name: devices
+          - name: user_id
+            description: >
+              Identifier of the user associated with the notification.
 
-        description: >
-          Raw device information containing the device platform
-          associated with each user.
+            tests:
+              - not_null

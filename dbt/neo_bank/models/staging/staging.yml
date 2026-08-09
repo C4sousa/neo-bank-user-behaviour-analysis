@@ -1,96 +1,55 @@
 version: 2
 
+# Staging models provide a clean, standardised representation of the
+# raw NeoBank sources for downstream analytical modelling.
+# Business definitions and KPI logic are applied in later layers.
+
 models:
 
   - name: stg_users
-
     description: >
-      Cleaned NeoBank users table containing one record per user.
-      This staging model standardises raw user data by renaming columns,
-      correcting data types, and documenting business definitions.
-      It provides a consistent user dimension for downstream models used
-      to analyse user engagement, retention and churn.
+      Standardised user-level source data. Column names and data types
+      are normalised while preserving the meaning of the raw source.
 
     config:
-
       contract:
-
         enforced: true
 
     columns:
 
       - name: user_id
-
         description: >
-          Unique identifier for each NeoBank user.
-          Acts as the primary key of the model and is used to join users
-          with transactions, notifications and device information.
-
+          Unique identifier for each NeoBank user. Primary key used to
+          connect users with transactions and notifications.
         data_type: string
-
         tests:
           - unique
           - not_null
 
       - name: birth_year
-
         description: >
           Calendar year in which the user was born.
-          Supports demographic segmentation when analysing engagement,
-          retention and churn across different age groups.
-
         data_type: int64
 
       - name: country
-
         description: >
-          ISO two-letter country code representing the user's registered
-          country. Used to compare user behaviour, engagement,
-          retention and churn across different markets.
-
+          ISO country code representing the user's registered country.
         data_type: string
 
       - name: city
-
         description: >
           Registered city associated with the user's account.
-          Supports geographical segmentation at a city level where
-          appropriate.
-
         data_type: string
 
       - name: created_at
-
         description: >
           Timestamp when the user account was created.
-          Represents the user's onboarding date and provides the starting
-          point for lifecycle, engagement and retention analysis.
-
         data_type: timestamp
 
       - name: plan
-
         description: >
-          Subscription plan currently assigned to the user.
-          This field supports behavioural comparisons across subscription
-          tiers when analysing engagement, retention and churn.
-
-          Possible values:
-
-          • STANDARD
-
-          • PREMIUM
-
-          • PREMIUM_FREE
-
-          • PREMIUM_OFFER
-
-          • METAL
-
-          • METAL_FREE
-
+          Subscription plan assigned to the user.
         data_type: string
-
         tests:
           - accepted_values:
               arguments:
@@ -103,502 +62,201 @@ models:
                   - METAL_FREE
 
       - name: num_contacts
-
         description: >
-          Number of contacts imported or connected by the user.
-          This feature may indicate user engagement with the NeoBank
-          ecosystem and can be used for behavioural segmentation.
-
+          Number of contacts associated with the user.
         data_type: int64
 
       - name: num_referrals
-
         description: >
-          Total number of referral invitations made by the user.
-          Can be used as an indicator of user advocacy and product
-          engagement.
-
+          Number of referral invitations made by the user.
         data_type: int64
 
       - name: num_successful_referrals
-
         description: >
-          Number of referral invitations that successfully resulted
-          in new NeoBank users.
-          Useful for measuring referral effectiveness and identifying
-          highly engaged users.
-
+          Number of referral invitations that resulted in successful
+          new-user registrations.
         data_type: int64
 
       - name: crypto_enabled
-
         description: >
-          Raw integer flag indicating whether the cryptocurrency feature
-          has been unlocked for the user.
-          Values are preserved from the source system in the staging layer
-          and will be converted into a Boolean in the intermediate layer.
-
+          Integer source flag indicating whether the Crypto feature
+          has been enabled for the user.
         data_type: int64
 
       - name: marketing_push_enabled
-
         description: >
-          Raw integer flag indicating whether the user has opted in to
-          receive marketing push notifications.
-          Values are preserved from the source system in the staging layer
-          and will be converted into a Boolean in the intermediate layer.
-
+          Integer source flag indicating whether marketing push
+          notifications are enabled for the user.
         data_type: int64
 
       - name: marketing_email_enabled
-
         description: >
-          Raw integer flag indicating whether the user has opted in to
-          receive marketing email communications.
-          Values are preserved from the source system in the staging layer
-          and will be converted into a Boolean in the intermediate layer.
-
+          Integer source flag indicating whether marketing email
+          notifications are enabled for the user.
         data_type: int64
-
 
 
   - name: stg_transactions
-
     description: >
-      Cleaned NeoBank transactions table containing one record per
-      financial transaction.
-      This staging model standardises raw transaction data by renaming
-      columns, correcting data types, and documenting business definitions.
-      It provides the transactional foundation for downstream models used
-      to analyse user engagement, retention and churn.
+      Standardised transaction-level source data. Column names and data
+      types are normalised while preserving the meaning of the raw source.
+      This model provides the transaction events used by downstream
+      behavioural and KPI models.
 
     config:
-
       contract:
-
         enforced: true
-
 
     columns:
 
-
       - name: transaction_id
-
         description: >
           Unique identifier for each financial transaction.
-          Acts as the primary key of the model.
-
         data_type: string
-
         tests:
-
           - unique
-
           - not_null
-
 
       - name: user_id
-
         description: >
-          Unique identifier of the user who performed the transaction.
-          Links each transaction to the corresponding NeoBank user.
-
+          Identifier of the user who performed the transaction.
         data_type: string
-
         tests:
-
           - not_null
-
           - relationships:
               arguments:
-
                 to: ref('stg_users')
-
                 field: user_id
 
-
       - name: transaction_type
-
         description: >
-          Business category describing the type of financial transaction.
-          Used to analyse user behaviour and identify the activities
-          that contribute most to engagement and retention.
-
-          Possible values:
-
-          • ATM
-
-          • CARD_PAYMENT
-
-          • CARD_REFUND
-
-          • CASHBACK
-
-          • EXCHANGE
-
-          • FEE
-
-          • REFUND
-
-          • TAX
-
-          • TOPUP
-
-          • TRANSFER
-
+          Type of financial transaction recorded by the source system.
         data_type: string
-
         tests:
-
           - accepted_values:
-
               arguments:
-
                 values:
-
                   - ATM
-
                   - CARD_PAYMENT
-
                   - CARD_REFUND
-
                   - CASHBACK
-
                   - EXCHANGE
-
                   - FEE
-
                   - REFUND
-
                   - TAX
-
                   - TOPUP
-
                   - TRANSFER
 
-
       - name: transaction_currency
-
         description: >
-          ISO currency code used for the transaction.
-          Useful for analysing international transaction behaviour.
-
+          Currency code associated with the transaction.
         data_type: string
-
 
       - name: amount_usd
-
         description: >
-          Monetary value of the transaction expressed in US dollars.
-          Provides a common currency for financial analysis and
-          comparison across users and markets.
-
+          Transaction amount expressed in US dollars.
         data_type: float64
 
-
       - name: transaction_state
-
         description: >
-          Final processing status of the transaction.
-          Used to distinguish successful, pending and unsuccessful
-          transaction outcomes.
-
-          Possible values:
-
-          • CANCELLED
-
-          • COMPLETED
-
-          • DECLINED
-
-          • FAILED
-
-          • PENDING
-
-          • REVERTED
-
+          Final processing state of the transaction.
         data_type: string
-
         tests:
-
           - accepted_values:
-
               arguments:
-
                 values:
-
                   - CANCELLED
-
                   - COMPLETED
-
                   - DECLINED
-
                   - FAILED
-
                   - PENDING
-
                   - REVERTED
 
-
       - name: cardholder_presence
-
         description: >
-          Indicates how the cardholder was present when the
-          transaction was initiated.
-          Useful for analysing different payment behaviours.
-
+          Indicates how the cardholder was present when the transaction
+          was initiated.
         data_type: string
-
 
       - name: merchant_mcc
-
         description: >
-          Merchant Category Code (MCC) identifying the merchant's
-          business category.
-          Although stored as a numeric identifier, it represents
-          a categorical business classification.
-
+          Merchant Category Code associated with the transaction.
         data_type: int64
 
-
       - name: merchant_city
-
         description: >
-          City where the merchant is located.
-          Supports geographical analysis of transaction activity.
-
+          City associated with the merchant.
         data_type: string
-
 
       - name: merchant_country
-
         description: >
-          ISO country code representing the merchant's country.
-          Supports international spending and cross-border
-          transaction analysis.
-
+          Country associated with the merchant.
         data_type: string
-
 
       - name: direction
-
         description: >
-          Indicates whether funds are entering or leaving the user's
-          account.
-          Useful when analysing cash flow and transaction behaviour.
-
+          Indicates the direction of funds for the transaction.
         data_type: string
 
-
       - name: created_at
-
         description: >
-          Timestamp when the transaction occurred.
-          Forms the basis for activity timelines, engagement metrics
-          and retention analysis.
-
+          Timestamp when the transaction was recorded.
         data_type: timestamp
-
 
 
   - name: stg_notifications
-
     description: >
-      Cleaned NeoBank notifications table containing one record per
-      notification event.
-      This staging model standardises raw notification data by renaming
-      columns and documenting business definitions.
-      It provides a consistent communication event table for downstream
-      models used to analyse user engagement and communication effectiveness.
+      Standardised notification-event source data. Column names and data
+      types are normalised while preserving the meaning of the raw source.
+      Notification events are used downstream to calculate notification
+      frequency based on notification exposure or delivery.
 
     config:
-
       contract:
-
         enforced: true
 
-
     columns:
-
 
       - name: reason
-
         description: >
-          Business event or trigger that generated the notification.
-          Used to analyse which notification types are most frequently
-          sent and how communication relates to user engagement.
-
+          Event or reason that generated the notification.
         data_type: string
-
 
       - name: channel
-
         description: >
-          Communication channel used to deliver the notification.
-
-          Possible values:
-
-          • EMAIL
-
-          • PUSH
-
-          • SMS
-
-          Used to compare communication strategies across different
-          delivery channels.
-
+          Channel through which the notification was delivered.
         data_type: string
-
         tests:
-
           - accepted_values:
-
               arguments:
-
                 values:
-
                   - EMAIL
-
                   - PUSH
-
                   - SMS
 
-
       - name: status
-
         description: >
-          Delivery outcome of the notification.
-
-          Possible values:
-
-          • SENT
-
-          • FAILED
-
-          Used to measure communication reliability and identify
-          unsuccessful delivery attempts.
-
+          Delivery status recorded for the notification.
         data_type: string
-
         tests:
-
           - accepted_values:
-
               arguments:
-
                 values:
-
                   - SENT
-
                   - FAILED
 
-
       - name: user_id
-
         description: >
-          Unique identifier of the user who received the notification.
-          Links each notification event to the corresponding NeoBank user.
-
+          Identifier of the user who received the notification.
         data_type: string
-
         tests:
-
           - not_null
-
           - relationships:
               arguments:
-
                 to: ref('stg_users')
-
                 field: user_id
-
 
       - name: created_at
-
         description: >
-          Timestamp when the notification event was created.
-          Used to build communication timelines and analyse notification
-          activity alongside user transactions and engagement.
-
+          Timestamp when the notification event was recorded.
         data_type: timestamp
-
-
-
-  - name: stg_devices
-
-    description: >
-      Cleaned NeoBank devices table containing one record per
-      user-device association.
-      This staging model standardises raw device information by renaming
-      generic column names and documenting business definitions.
-      It provides device platform information for downstream user
-      segmentation and behavioural analysis.
-
-    config:
-
-      contract:
-
-        enforced: true
-
-    columns:
-
-      - name: device_platform
-
-        description: >
-          Mobile platform associated with the registered device.
-
-          Possible values:
-
-          • Android
-
-          • Apple
-
-          • Unknown
-
-          • brand
-
-          These values reflect the cleaned staging output from the raw source
-          data. Unexpected source values are retained to preserve transparency
-          and allow further investigation during downstream analysis.
-
-        data_type: string
-
-        tests:
-
-          - not_null
-
-          - accepted_values:
-
-              arguments:
-
-                values:
-
-                  - Android
-
-                  - Apple
-
-                  - Unknown
-
-                  - brand
-
-
-      - name: user_id
-
-        description: >
-          Unique identifier of the user associated with the registered device.
-          Links each device record to the corresponding NeoBank user and
-          supports analysis of device usage across the user base.
-
-        data_type: string
-
-        tests:
-
-          - not_null
-
-          - relationships:
-
-              arguments:
-
-                to: ref('stg_users')
-
-                field: user_id
