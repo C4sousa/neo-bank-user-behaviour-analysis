@@ -1,0 +1,74 @@
+# ------------------------------------------------------------
+# NeoBank dbt project configuration
+# ------------------------------------------------------------
+
+# Name of the dbt project.
+# This must match the profile name defined in profiles.yml.
+name: 'neo_bank'
+
+# Project version.
+version: '1.0.0'
+
+# dbt configuration version.
+config-version: 2
+
+# Connection profile used by this project.
+profile: 'neo_bank'
+
+
+# ------------------------------------------------------------
+# Project directories
+# ------------------------------------------------------------
+
+# SQL transformation models.
+model-paths: ["models"]
+
+# Analytical SQL files that are not materialised as models.
+analysis-paths: ["analyses"]
+
+# Custom data tests.
+test-paths: ["tests"]
+
+# Seed files.
+seed-paths: ["seeds"]
+
+# Custom Jinja macros.
+macro-paths: ["macros"]
+
+# Snapshot definitions.
+snapshot-paths: ["snapshots"]
+
+
+# ------------------------------------------------------------
+# Clean targets
+# ------------------------------------------------------------
+
+# Directories removed by `dbt clean`.
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+
+# ------------------------------------------------------------
+# Model configuration
+# ------------------------------------------------------------
+
+models:
+  neo_bank:
+
+    # Staging models provide light, source-aligned transformations.
+    # They are materialised as views.
+    staging:
+      +materialized: view
+
+    # Intermediate models contain reusable business logic
+    # and transformations between staging and analytical marts.
+    # They are materialised as views.
+    intermediate:
+      +materialized: view
+
+    # Mart models provide final analytical datasets for
+    # reporting, dashboards, and downstream analysis.
+    # They are materialised as tables.
+    marts:
+      +materialized: table
