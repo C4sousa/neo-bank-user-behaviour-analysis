@@ -1,0 +1,162 @@
+version: 2
+
+models:
+
+  # ============================================================
+  # MART: ACTIVATION
+  # Grain: one row per user
+  # KPI logic is inherited from int_user_kpis.
+  # ============================================================
+
+  - name: mart_activation
+
+    description: >
+      Analysis-ready Mart exposing the approved Activation KPI at one row
+      per user. Activation is calculated centrally in int_user_kpis and is
+      not recreated in this Mart.
+
+    config:
+      contract:
+        enforced: true
+      meta:
+        grain: one row per user
+        purpose: outcome-specific analytical Mart for Activation
+        source_model: int_user_kpis
+
+    columns:
+
+      - name: user_id
+        description: >
+          Unique identifier for the user. The model grain is one row per user.
+        data_type: string
+        data_tests:
+          - not_null
+          - unique
+
+      - name: activation_flag
+        description: >
+          Indicates whether the user meets the approved Activation definition.
+          The KPI logic is inherited from int_user_kpis.
+        data_type: boolean
+        data_tests:
+          - not_null
+
+
+  # ============================================================
+  # MART: ENGAGEMENT
+  # Grain: one row per user
+  # KPI logic is inherited from int_user_kpis.
+  # ============================================================
+
+  - name: mart_engagement
+
+    description: >
+      Analysis-ready Mart exposing the approved Engagement KPI at one row
+      per user. Engagement is calculated centrally in int_user_kpis and is
+      not recreated in this Mart.
+
+    config:
+      contract:
+        enforced: true
+      meta:
+        grain: one row per user
+        purpose: outcome-specific analytical Mart for Engagement
+        source_model: int_user_kpis
+
+    columns:
+
+      - name: user_id
+        description: >
+          Unique identifier for the user. The model grain is one row per user.
+        data_type: string
+        data_tests:
+          - not_null
+          - unique
+
+      - name: engagement_flag
+        description: >
+          Indicates whether the user meets the approved Engagement definition.
+          The KPI logic is inherited from int_user_kpis.
+        data_type: boolean
+        data_tests:
+          - not_null
+
+
+  # ============================================================
+  # MART: RETENTION
+  # Grain: one row per user
+  # KPI logic is inherited from int_user_kpis.
+  # ============================================================
+
+  - name: mart_retention
+
+    description: >
+      Analysis-ready Mart exposing the approved Retention KPI at one row
+      per user. Retention is calculated centrally in int_user_kpis and is
+      not recreated in this Mart.
+
+    config:
+      contract:
+        enforced: true
+      meta:
+        grain: one row per user
+        purpose: outcome-specific analytical Mart for Retention
+        source_model: int_user_kpis
+
+    columns:
+
+      - name: user_id
+        description: >
+          Unique identifier for the user. The model grain is one row per user.
+        data_type: string
+        data_tests:
+          - not_null
+          - unique
+
+      - name: retention_flag
+        description: >
+          Indicates whether the user meets the approved Retention definition.
+          The KPI logic is inherited from int_user_kpis.
+        data_type: boolean
+        data_tests:
+          - not_null
+
+
+  # ============================================================
+  # MART: CHURN
+  # Grain: one row per user
+  # KPI logic is inherited from int_user_kpis.
+  # ============================================================
+
+  - name: mart_churn
+
+    description: >
+      Analysis-ready Mart exposing the approved Churn KPI at one row
+      per user. Churn is calculated centrally in int_user_kpis and is
+      not recreated in this Mart.
+
+    config:
+      contract:
+        enforced: true
+      meta:
+        grain: one row per user
+        purpose: outcome-specific analytical Mart for Churn
+        source_model: int_user_kpis
+
+    columns:
+
+      - name: user_id
+        description: >
+          Unique identifier for the user. The model grain is one row per user.
+        data_type: string
+        data_tests:
+          - not_null
+          - unique
+
+      - name: churn_flag
+        description: >
+          Indicates whether the user meets the approved Churn definition.
+          The KPI logic is inherited from int_user_kpis.
+        data_type: boolean
+        data_tests:
+          - not_null
