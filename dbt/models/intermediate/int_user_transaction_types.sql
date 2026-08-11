@@ -15,8 +15,7 @@
 
 with analysis_date as (
 
-    select
-        max(created_at) as analysis_date
+    select max(created_at) as analysis_date
 
     from {{ ref('stg_transactions') }}
 
@@ -30,11 +29,12 @@ transaction_type_activity as (
 
         count(*) as transaction_count
 
-    from {{ ref('stg_transactions') }} t
+    from {{ ref('stg_transactions') }} as t
 
-    cross join analysis_date a
+    cross join analysis_date as a
 
-    where t.transaction_state = 'COMPLETED'
+    where
+        t.transaction_state = 'COMPLETED'
         and t.transaction_type is not null
         and t.created_at >= timestamp_sub(
             a.analysis_date,

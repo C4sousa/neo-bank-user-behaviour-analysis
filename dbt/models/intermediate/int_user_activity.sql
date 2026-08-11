@@ -13,8 +13,7 @@
 
 with analysis_date as (
 
-    select
-        max(created_at) as analysis_date
+    select max(created_at) as analysis_date
 
     from {{ ref('stg_transactions') }}
 
@@ -52,10 +51,10 @@ transaction_activity as (
         max(
             case
                 when t.transaction_state = 'COMPLETED'
-                then date_trunc(
-                    date(t.created_at),
-                    week(monday)
-                )
+                    then date_trunc(
+                        date(t.created_at),
+                        week (monday)
+                    )
             end
         ) as activity_period,
 
@@ -63,13 +62,13 @@ transaction_activity as (
         max(
             case
                 when t.transaction_state = 'COMPLETED'
-                then date(t.created_at)
+                    then date(t.created_at)
             end
         ) as last_successful_transaction_date
 
-    from {{ ref('stg_transactions') }} t
+    from {{ ref('stg_transactions') }} as t
 
-    cross join analysis_date a
+    cross join analysis_date as a
 
     group by
         t.user_id
@@ -84,11 +83,12 @@ merchant_category as (
 
         sum(t.amount_usd) as total_amount_usd
 
-    from {{ ref('stg_transactions') }} t
+    from {{ ref('stg_transactions') }} as t
 
-    cross join analysis_date a
+    cross join analysis_date as a
 
-    where t.transaction_state = 'COMPLETED'
+    where
+        t.transaction_state = 'COMPLETED'
         and t.merchant_mcc is not null
         and t.created_at >= timestamp_sub(
             a.analysis_date,
@@ -114,7 +114,7 @@ top_merchant_category as (
         partition by user_id
         order by
             total_amount_usd desc,
-            merchant_mcc
+            merchant_mcc asc
     ) = 1
 
 ),
@@ -128,11 +128,12 @@ notification_activity as (
         -- delivered notification exposure, not interaction.
         count(*) as notification_frequency_30d
 
-    from {{ ref('stg_notifications') }} n
+    from {{ ref('stg_notifications') }} as n
 
-    cross join analysis_date a
+    cross join analysis_date as a
 
-    where n.status = 'SENT'
+    where
+        n.status = 'SENT'
         and n.created_at >= timestamp_sub(
             a.analysis_date,
             interval 30 day
@@ -147,6 +148,12 @@ notification_activity as (
 select
     u.user_id,
 
+    m.merchant_spending_category,
+
+    t.activity_period,
+
+    t.last_successful_transaction_date,
+
     coalesce(
         t.transaction_frequency_30d,
         0
@@ -160,21 +167,15 @@ select
     coalesce(
         t.failed_declined_transactions_30d,
         0
-    ) as failed_declined_transactions_30d,
+    ) as failed_declined_transactions_30d
 
-    m.merchant_spending_category,
+from {{ ref('stg_users') }} as u
 
-    t.activity_period,
-
-    t.last_successful_transaction_date
-
-from {{ ref('stg_users') }} u
-
-left join transaction_activity t
+left join transaction_activity as t
     on u.user_id = t.user_id
 
-left join notification_activity n
+left join notification_activity as n
     on u.user_id = n.user_id
 
-left join top_merchant_category m
+left join top_merchant_category as m
     on u.user_id = m.user_id
