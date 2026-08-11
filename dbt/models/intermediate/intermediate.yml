@@ -1,16 +1,17 @@
 version: 2
 
-# Intermediate models contain reusable analytical variables.
-# User profile attributes describe who the user is.
-# User activity variables describe what the user has done.
-# Business KPI definitions are centralised in the KPI model.
-
 models:
 
+  # ============================================================
+  # USER PROFILE
+  # ============================================================
+
   - name: int_user_profile
+
     description: >
-      Reusable user-level profile attributes required by the approved
-      analytical hypotheses. Grain: one row per user.
+      Reusable user-level profile attributes required by the
+      approved analytical hypotheses.
+      Grain: one row per user.
 
     config:
       contract:
@@ -33,14 +34,15 @@ models:
 
       - name: crypto_adoption
         description: >
-          Indicates whether Crypto functionality is enabled for the user
-          at analysis time. Stored as a binary integer where 0 indicates
-          not enabled and 1 indicates enabled.
+          Indicates whether Crypto functionality is enabled for the
+          user at analysis time. Stored as a binary integer where
+          0 indicates not enabled and 1 indicates enabled.
         data_type: int64
 
       - name: plan_segment
         description: >
-          Approved Premium versus Standard user grouping used for analysis.
+          Approved Premium versus Standard user grouping used for
+          analytical segmentation.
         data_type: string
         tests:
           - accepted_values:
@@ -48,3 +50,112 @@ models:
                 values:
                   - STANDARD
                   - PREMIUM
+
+
+  # ============================================================
+  # USER ACTIVITY
+  # ============================================================
+
+  - name: int_user_activity
+
+    description: >
+      Reusable user-level behavioural variables required by the
+      approved analytical hypotheses.
+      Grain: one row per user.
+
+    config:
+      contract:
+        enforced: true
+
+    columns:
+
+      - name: user_id
+        description: >
+          Unique identifier for the user and primary key of the model.
+        data_type: string
+        tests:
+          - not_null
+          - unique
+
+      - name: transaction_frequency_30d
+        description: >
+          Count of successful transactions completed by the user
+          during the 30 days before the analysis date.
+        data_type: int64
+
+      - name: notification_frequency_30d
+        description: >
+          Count of successfully delivered notifications received by
+          the user during the 30 days before the analysis date.
+          Represents notification exposure rather than interaction.
+        data_type: int64
+
+      - name: failed_declined_transactions_30d
+        description: >
+          Count of transactions with FAILED or DECLINED status
+          during the 30 days before the analysis date.
+        data_type: int64
+
+      - name: merchant_spending_category
+        description: >
+          Merchant Category Code with the highest total successful
+          transaction amount for the user during the 30-day analysis
+          window. Null when no eligible MCC is available.
+        data_type: int64
+
+      - name: activity_period
+        description: >
+          Calendar week associated with the user's most recent
+          successful transaction. The calendar week begins on Monday.
+        data_type: date
+
+      - name: last_successful_transaction_date
+        description: >
+          Date of the user's most recent successful transaction.
+        data_type: date
+
+
+  # ============================================================
+  # TRANSACTION TYPES
+  # ============================================================
+
+  - name: int_user_transaction_types
+
+    description: >
+      Reusable transaction-type behavioural data used to analyse
+      differences in user behaviour across transaction types.
+      Grain: one row per user and transaction type.
+
+    config:
+      contract:
+        enforced: true
+
+    columns:
+
+      - name: user_id
+        description: >
+          Identifier for the user. Multiple rows per user are expected
+          because the model grain is user × transaction type.
+        data_type: string
+        tests:
+          - not_null
+
+      - name: transaction_type
+        description: >
+          Transaction type taken directly from the source dataset
+          without additional grouping or reclassification.
+        data_type: string
+        tests:
+          - not_null
+
+      - name: transaction_count
+        description: >
+          Number of successful transactions of the given transaction
+          type performed by the user during the 30-day analysis window.
+        data_type: int64
+
+      - name: transaction_share
+        description: >
+          Share of the user's successful transactions represented by
+          the given transaction type during the 30-day analysis window.
+        data_type: float64
