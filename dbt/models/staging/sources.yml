@@ -10,7 +10,6 @@ version: 2
 # staging and intermediate models.
 
 sources:
-
   - name: neobank
     database: le-wagon-da-502302
     schema: NeoBank
@@ -20,52 +19,40 @@ sources:
       pipeline.
 
     tables:
-
       - name: users
-
         description: >
           Raw user-level data containing account information, demographics,
           subscription plans, referrals and user settings.
 
         columns:
-
           - name: user_id
             description: >
               Unique identifier for each user.
-
             tests:
               - unique
               - not_null
 
-
       - name: transactions
-
         description: >
           Raw transaction-level data containing financial activity,
           transaction states, transaction types and merchant information.
 
         columns:
-
           - name: transaction_id
             description: >
               Unique identifier for each transaction.
-
             tests:
               - unique
               - not_null
 
-
       - name: notifications
-
         description: >
           Raw notification events associated with users and their
           communication channels.
 
         columns:
-
           - name: user_id
             description: >
               Identifier of the user associated with the notification.
-
             tests:
               - not_null

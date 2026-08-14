@@ -14,5 +14,4 @@ select
     ea_merchant_country as merchant_country,
     direction,
     created_date as created_at
-
 from {{ source('neobank', 'transactions') }}

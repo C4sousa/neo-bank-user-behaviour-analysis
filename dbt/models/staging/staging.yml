@@ -2,21 +2,21 @@ version: 2
 
 # Staging models provide a clean, standardised representation of the
 # raw NeoBank sources for downstream analytical modelling.
-# Business definitions and KPI logic are applied in later layers.
+# Business definitions and analytical transformations are applied
+# in later layers.
 
 models:
-
   - name: stg_users
     description: >
       Standardised user-level source data. Column names and data types
       are normalised while preserving the meaning of the raw source.
+      Grain: one row per user.
 
     config:
       contract:
         enforced: true
 
     columns:
-
       - name: user_id
         description: >
           Unique identifier for each NeoBank user. Primary key used to
@@ -79,22 +79,21 @@ models:
 
       - name: crypto_enabled
         description: >
-          Integer source flag indicating whether the Crypto feature
-          has been enabled for the user.
+          Source flag indicating whether the Crypto feature has been
+          enabled for the user.
         data_type: int64
 
       - name: marketing_push_enabled
         description: >
-          Integer source flag indicating whether marketing push
-          notifications are enabled for the user.
+          Source flag indicating whether marketing push notifications
+          are enabled for the user.
         data_type: int64
 
       - name: marketing_email_enabled
         description: >
-          Integer source flag indicating whether marketing email
-          notifications are enabled for the user.
+          Source flag indicating whether marketing email notifications
+          are enabled for the user.
         data_type: int64
-
 
   - name: stg_transactions
     description: >
@@ -102,13 +101,13 @@ models:
       types are normalised while preserving the meaning of the raw source.
       This model provides the transaction events used by downstream
       behavioural and KPI models.
+      Grain: one row per transaction.
 
     config:
       contract:
         enforced: true
 
     columns:
-
       - name: transaction_id
         description: >
           Unique identifier for each financial transaction.
@@ -203,20 +202,19 @@ models:
           Timestamp when the transaction was recorded.
         data_type: timestamp
 
-
   - name: stg_notifications
     description: >
       Standardised notification-event source data. Column names and data
       types are normalised while preserving the meaning of the raw source.
       Notification events are used downstream to calculate notification
       frequency based on notification exposure or delivery.
+      Grain: one row per notification.
 
     config:
       contract:
         enforced: true
 
     columns:
-
       - name: reason
         description: >
           Event or reason that generated the notification.
