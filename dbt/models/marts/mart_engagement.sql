@@ -1,23 +1,21 @@
--- mart_engagement
+-- ============================================================
+-- MART — ENGAGEMENT
+-- ============================================================
+--
 -- Purpose:
--- Exposes the approved Engagement KPI as an analysis-ready Mart.
+-- Present the approved Engagement KPI for BI consumption.
+--
+-- KPI logic is calculated in int_user_engagement.
 --
 -- Grain:
 -- One row per user.
 --
--- Business logic:
--- Engagement is calculated centrally in int_user_kpis.
--- This Mart does not recreate or modify the KPI definition.
---
--- Downstream use:
--- Supports engagement-focused analysis and reporting.
-
-{{ config(
-    materialized='table'
-) }}
+-- ============================================================
 
 select
+
     user_id,
+
     engagement_flag
 
-from {{ ref('int_user_kpis') }}
+from {{ ref('int_user_engagement') }}

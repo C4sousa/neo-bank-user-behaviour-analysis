@@ -3,160 +3,238 @@ version: 2
 models:
 
   # ============================================================
-  # MART: ACTIVATION
-  # Grain: one row per user
-  # KPI logic is inherited from int_user_kpis.
+  # ANALYTICAL MARTS
   # ============================================================
 
-  - name: mart_activation
-
-    description: >
-      Analysis-ready Mart exposing the approved Activation KPI at one row
-      per user. Activation is calculated centrally in int_user_kpis and is
-      not recreated in this Mart.
-
-    config:
-      contract:
-        enforced: true
-      meta:
-        grain: one row per user
-        purpose: outcome-specific analytical Mart for Activation
-        source_model: int_user_kpis
-
-    columns:
-
-      - name: user_id
-        description: >
-          Unique identifier for the user. The model grain is one row per user.
-        data_type: string
-        data_tests:
-          - not_null
-          - unique
-
-      - name: activation_flag
-        description: >
-          Indicates whether the user meets the approved Activation definition.
-          The KPI logic is inherited from int_user_kpis.
-        data_type: boolean
-        data_tests:
-          - not_null
-
-
-  # ============================================================
-  # MART: ENGAGEMENT
-  # Grain: one row per user
-  # KPI logic is inherited from int_user_kpis.
-  # ============================================================
+  # ------------------------------------------------------------
+  # ENGAGEMENT
+  # ------------------------------------------------------------
 
   - name: mart_engagement
 
     description: >
-      Analysis-ready Mart exposing the approved Engagement KPI at one row
-      per user. Engagement is calculated centrally in int_user_kpis and is
-      not recreated in this Mart.
+      Analysis-ready user-level dataset for approved Engagement
+      hypotheses. Combines the standardised Engagement outcome
+      with the analytical variables required for downstream
+      investigation.
+      Grain: one row per user.
 
     config:
       contract:
         enforced: true
-      meta:
-        grain: one row per user
-        purpose: outcome-specific analytical Mart for Engagement
-        source_model: int_user_kpis
 
     columns:
 
       - name: user_id
         description: >
-          Unique identifier for the user. The model grain is one row per user.
+          Unique identifier for the user.
         data_type: string
-        data_tests:
+        tests:
           - not_null
           - unique
 
       - name: engagement_flag
         description: >
-          Indicates whether the user meets the approved Engagement definition.
-          The KPI logic is inherited from int_user_kpis.
+          Business-defined Engagement outcome calculated by
+          int_user_engagement.
         data_type: boolean
-        data_tests:
-          - not_null
+
+      - name: transaction_frequency_30d
+        description: >
+          Count of successful transactions completed by the user
+          during the approved 30-day activity window.
+        data_type: int64
+
+      - name: notification_frequency_30d
+        description: >
+          Count of successfully delivered notifications received
+          by the user during the approved 30-day activity window.
+        data_type: int64
+
+      - name: merchant_spending_category
+        description: >
+          Merchant Category Code with the highest total successful
+          transaction amount for the user during the approved
+          30-day activity window.
+        data_type: int64
+
+      - name: activity_period
+        description: >
+          Calendar week associated with the user's most recent
+          successful transaction. The calendar week begins on Monday.
+        data_type: date
+
+      - name: crypto_adoption
+        description: >
+          Binary indicator representing whether crypto functionality
+          is enabled for the user.
+        data_type: int64
+
+      - name: plan_segment
+        description: >
+          Standardised user plan segment.
+        data_type: string
+
+      - name: country
+        description: >
+          User country.
+        data_type: string
 
 
-  # ============================================================
-  # MART: RETENTION
-  # Grain: one row per user
-  # KPI logic is inherited from int_user_kpis.
-  # ============================================================
+  # ------------------------------------------------------------
+  # RETENTION
+  # ------------------------------------------------------------
 
   - name: mart_retention
 
     description: >
-      Analysis-ready Mart exposing the approved Retention KPI at one row
-      per user. Retention is calculated centrally in int_user_kpis and is
-      not recreated in this Mart.
+      Analysis-ready user-level dataset for approved Retention
+      hypotheses. Combines the standardised Retention outcome
+      with the analytical variables required for downstream
+      investigation.
+      Grain: one row per user.
 
     config:
       contract:
         enforced: true
-      meta:
-        grain: one row per user
-        purpose: outcome-specific analytical Mart for Retention
-        source_model: int_user_kpis
 
     columns:
 
       - name: user_id
         description: >
-          Unique identifier for the user. The model grain is one row per user.
+          Unique identifier for the user.
         data_type: string
-        data_tests:
+        tests:
           - not_null
           - unique
 
       - name: retention_flag
         description: >
-          Indicates whether the user meets the approved Retention definition.
-          The KPI logic is inherited from int_user_kpis.
+          Business-defined Retention outcome calculated by
+          int_user_retention.
         data_type: boolean
-        data_tests:
-          - not_null
+
+      - name: transaction_frequency_30d
+        description: >
+          Count of successful transactions completed by the user
+          during the approved 30-day activity window.
+        data_type: int64
+
+      - name: notification_frequency_30d
+        description: >
+          Count of successfully delivered notifications received
+          by the user during the approved 30-day activity window.
+        data_type: int64
+
+      - name: crypto_adoption
+        description: >
+          Binary indicator representing whether crypto functionality
+          is enabled for the user.
+        data_type: int64
+
+      - name: plan_segment
+        description: >
+          Standardised user plan segment.
+        data_type: string
+
+      - name: country
+        description: >
+          User country.
+        data_type: string
 
 
-  # ============================================================
-  # MART: CHURN
-  # Grain: one row per user
-  # KPI logic is inherited from int_user_kpis.
-  # ============================================================
+  # ------------------------------------------------------------
+  # CHURN
+  # ------------------------------------------------------------
 
   - name: mart_churn
 
     description: >
-      Analysis-ready Mart exposing the approved Churn KPI at one row
-      per user. Churn is calculated centrally in int_user_kpis and is
-      not recreated in this Mart.
+      Analysis-ready user-level dataset for approved Churn
+      hypotheses. Combines the standardised Churn outcome
+      with the analytical variables required for downstream
+      investigation.
+      Grain: one row per user.
 
     config:
       contract:
         enforced: true
-      meta:
-        grain: one row per user
-        purpose: outcome-specific analytical Mart for Churn
-        source_model: int_user_kpis
 
     columns:
 
       - name: user_id
         description: >
-          Unique identifier for the user. The model grain is one row per user.
+          Unique identifier for the user.
         data_type: string
-        data_tests:
+        tests:
           - not_null
           - unique
 
       - name: churn_flag
         description: >
-          Indicates whether the user meets the approved Churn definition.
-          The KPI logic is inherited from int_user_kpis.
+          Business-defined Churn outcome calculated by
+          int_user_churn.
         data_type: boolean
-        data_tests:
+
+      - name: failed_declined_transactions_30d
+        description: >
+          Count of FAILED or DECLINED transactions completed by
+          the user during the approved 30-day activity window.
+        data_type: int64
+
+      - name: country
+        description: >
+          User country.
+        data_type: string
+
+
+  # ------------------------------------------------------------
+  # CHURN BY TRANSACTION TYPE
+  # ------------------------------------------------------------
+
+  - name: mart_churn_transaction_types
+
+    description: >
+      Analysis-ready dataset for the approved Churn by
+      Transaction Type hypothesis. Combines transaction-type
+      behaviour with the user-level Churn outcome.
+      Grain: one row per user × transaction type.
+
+    config:
+      contract:
+        enforced: true
+
+    columns:
+
+      - name: user_id
+        description: >
+          Unique identifier for the user.
+        data_type: string
+        tests:
           - not_null
+
+      - name: transaction_type
+        description: >
+          Transaction type supplied by the source dataset.
+        data_type: string
+        tests:
+          - not_null
+
+      - name: transaction_count
+        description: >
+          Count of successful transactions for the user and
+          transaction type during the approved 30-day window.
+        data_type: int64
+
+      - name: transaction_share
+        description: >
+          Share of the user's successful transactions represented
+          by the transaction type during the approved 30-day window.
+        data_type: float64
+
+      - name: churn_flag
+        description: >
+          User-level Churn outcome calculated by int_user_churn.
+          The outcome is repeated across the user's transaction-type
+          rows without changing the model grain.
+        data_type: boolean

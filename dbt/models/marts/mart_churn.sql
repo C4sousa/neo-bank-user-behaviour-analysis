@@ -1,23 +1,45 @@
--- mart_churn
+-- ============================================================
+-- MART — CHURN
+-- ============================================================
+--
 -- Purpose:
--- Exposes the approved Churn KPI as an analysis-ready Mart.
+--   Analysis-ready dataset for user-level Churn hypotheses.
 --
 -- Grain:
--- One row per user.
+--   One row per user.
 --
--- Business logic:
--- Churn is calculated centrally in int_user_kpis.
--- This Mart does not recreate or modify the KPI definition.
+-- KPI logic is calculated in int_user_churn.
+-- This Mart combines the Churn outcome with the
+-- analytical variables required for downstream analysis.
 --
--- Downstream use:
--- Supports churn-focused analysis and reporting.
-
-{{ config(
-    materialized='table'
-) }}
+-- ============================================================
 
 select
-    user_id,
-    churn_flag
 
-from {{ ref('int_user_kpis') }}
+    c.user_id,
+
+    -- --------------------------------------------------------
+    -- CHURN OUTCOME
+    -- --------------------------------------------------------
+
+    c.churn_flag,
+
+    -- --------------------------------------------------------
+    -- BEHAVIOURAL VARIABLES
+    -- --------------------------------------------------------
+
+    a.failed_declined_transactions_30d,
+
+    -- --------------------------------------------------------
+    -- USER PROFILE VARIABLES
+    -- --------------------------------------------------------
+
+    p.country
+
+from {{ ref('int_user_churn') }} as c
+
+left join {{ ref('int_user_activity') }} as a
+    on c.user_id = a.user_id
+
+left join {{ ref('int_user_profile') }} as p
+    on c.user_id = p.user_id

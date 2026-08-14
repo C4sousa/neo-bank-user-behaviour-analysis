@@ -1,23 +1,51 @@
--- mart_retention
+-- ============================================================
+-- MART — RETENTION
+-- ============================================================
+--
 -- Purpose:
--- Exposes the approved Retention KPI as an analysis-ready Mart.
+--   Analysis-ready dataset for Retention hypotheses.
 --
 -- Grain:
--- One row per user.
+--   One row per user.
 --
--- Business logic:
--- Retention is calculated centrally in int_user_kpis.
--- This Mart does not recreate or modify the KPI definition.
+-- KPI logic is calculated in int_user_retention.
+-- This Mart combines the Retention outcome with the
+-- analytical variables required for downstream analysis.
 --
--- Downstream use:
--- Supports retention-focused analysis and reporting.
-
-{{ config(
-    materialized='table'
-) }}
+-- ============================================================
 
 select
-    user_id,
-    retention_flag
 
-from {{ ref('int_user_kpis') }}
+    r.user_id,
+
+    -- --------------------------------------------------------
+    -- RETENTION OUTCOME
+    -- --------------------------------------------------------
+
+    r.retention_flag,
+
+    -- --------------------------------------------------------
+    -- BEHAVIOURAL VARIABLES
+    -- --------------------------------------------------------
+
+    a.transaction_frequency_30d,
+
+    a.notification_frequency_30d,
+
+    -- --------------------------------------------------------
+    -- USER PROFILE VARIABLES
+    -- --------------------------------------------------------
+
+    p.crypto_adoption,
+
+    p.plan_segment,
+
+    p.country
+
+from {{ ref('int_user_retention') }} as r
+
+left join {{ ref('int_user_activity') }} as a
+    on r.user_id = a.user_id
+
+left join {{ ref('int_user_profile') }} as p
+    on r.user_id = p.user_id
