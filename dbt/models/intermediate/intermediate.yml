@@ -3,14 +3,20 @@ version: 2
 models:
 
   # ============================================================
-  # USER PROFILE
+  # LEVEL 0 — DOMAIN-LEVEL SUPPORTING TRANSFORMATIONS
   # ============================================================
 
-  - name: int_user_profile
+  # ------------------------------------------------------------
+  # TRANSACTION ACTIVITY
+  # ------------------------------------------------------------
+
+  - name: int_transaction_activity
 
     description: >
-      Reusable user-level profile attributes required by the
-      approved analytical hypotheses.
+      User-level transaction activity derived from the transaction
+      domain. This model isolates transaction-specific transformations
+      before they are assembled into reusable user-level analytical
+      models.
       Grain: one row per user.
 
     config:
@@ -21,57 +27,7 @@ models:
 
       - name: user_id
         description: >
-          Unique identifier for the user and primary key of the model.
-        data_type: string
-        tests:
-          - not_null
-          - unique
-
-      - name: country
-        description: >
-          Country associated with the user at analysis time.
-        data_type: string
-
-      - name: crypto_adoption
-        description: >
-          Indicates whether Crypto functionality is enabled for the
-          user at analysis time. Stored as a binary integer where
-          0 indicates not enabled and 1 indicates enabled.
-        data_type: int64
-
-      - name: plan_segment
-        description: >
-          Approved Premium versus Standard user grouping used for
-          analytical segmentation.
-        data_type: string
-        tests:
-          - accepted_values:
-              arguments:
-                values:
-                  - STANDARD
-                  - PREMIUM
-
-
-  # ============================================================
-  # USER ACTIVITY
-  # ============================================================
-
-  - name: int_user_activity
-
-    description: >
-      Reusable user-level behavioural variables required by the
-      approved analytical hypotheses.
-      Grain: one row per user.
-
-    config:
-      contract:
-        enforced: true
-
-    columns:
-
-      - name: user_id
-        description: >
-          Unique identifier for the user and primary key of the model.
+          Unique identifier for the user.
         data_type: string
         tests:
           - not_null
@@ -80,27 +36,13 @@ models:
       - name: transaction_frequency_30d
         description: >
           Count of successful transactions completed by the user
-          during the 30 days before the analysis date.
-        data_type: int64
-
-      - name: notification_frequency_30d
-        description: >
-          Count of successfully delivered notifications received by
-          the user during the 30 days before the analysis date.
-          Represents notification exposure rather than interaction.
+          during the approved 30-day activity window.
         data_type: int64
 
       - name: failed_declined_transactions_30d
         description: >
-          Count of transactions with FAILED or DECLINED status
-          during the 30 days before the analysis date.
-        data_type: int64
-
-      - name: merchant_spending_category
-        description: >
-          Merchant Category Code with the highest total successful
-          transaction amount for the user during the 30-day analysis
-          window. Null when no eligible MCC is available.
+          Count of FAILED or DECLINED transactions completed by the
+          user during the approved 30-day activity window.
         data_type: int64
 
       - name: activity_period
@@ -115,62 +57,17 @@ models:
         data_type: date
 
 
-  # ============================================================
-  # TRANSACTION TYPES
-  # ============================================================
+  # ------------------------------------------------------------
+  # NOTIFICATION ACTIVITY
+  # ------------------------------------------------------------
 
-  - name: int_user_transaction_types
-
-    description: >
-      Reusable transaction-type behavioural data used to analyse
-      differences in user behaviour across transaction types.
-      Grain: one row per user and transaction type.
-
-    config:
-      contract:
-        enforced: true
-
-    columns:
-
-      - name: user_id
-        description: >
-          Identifier for the user. Multiple rows per user are expected
-          because the model grain is user × transaction type.
-        data_type: string
-        tests:
-          - not_null
-
-      - name: transaction_type
-        description: >
-          Transaction type taken directly from the source dataset
-          without additional grouping or reclassification.
-        data_type: string
-        tests:
-          - not_null
-
-      - name: transaction_count
-        description: >
-          Number of successful transactions of the given transaction
-          type performed by the user during the 30-day analysis window.
-        data_type: int64
-
-      - name: transaction_share
-        description: >
-          Share of the user's successful transactions represented by
-          the given transaction type during the 30-day analysis window.
-        data_type: float64
-
-
-
-  # ============================================================
-  # USER KPIs
-  # ============================================================
-
-  - name: int_user_kpis
+  - name: int_notification_activity
 
     description: >
-      Reusable user-level business KPI definitions required by the
-      approved analytical hypotheses.
+      User-level notification activity derived from the notification
+      domain. This model isolates notification-specific transformations
+      before they are assembled into reusable user-level analytical
+      models.
       Grain: one row per user.
 
     config:
@@ -181,34 +78,51 @@ models:
 
       - name: user_id
         description: >
-          Unique identifier for the user and primary key of the model.
+          Unique identifier for the user.
         data_type: string
         tests:
           - not_null
           - unique
 
-      - name: activation_flag
+      - name: notification_frequency_30d
         description: >
-          Indicates whether the user has completed their first
-          successful transaction.
-        data_type: boolean
+          Count of successfully delivered notifications received by
+          the user during the approved 30-day activity window.
+          Represents notification exposure rather than interaction.
+        data_type: int64
 
-      - name: engagement_flag
-        description: >
-          Indicates whether the user completed at least one successful
-          transaction in 3 of the previous 4 weeks before the analysis date.
-        data_type: boolean
 
-      - name: retention_flag
-        description: >
-          Indicates whether the user completed at least one successful
-          transaction in each calendar month after becoming active.
-        data_type: boolean
+  # ------------------------------------------------------------
+  # MERCHANT ACTIVITY
+  # ------------------------------------------------------------
 
-      - name: churn_flag
+  - name: int_merchant_activity
+
+    description: >
+      User-level merchant activity derived from transaction merchant
+      information. This model isolates merchant-specific aggregation
+      before it is assembled into reusable user-level analytical
+      models.
+      Grain: one row per user.
+
+    config:
+      contract:
+        enforced: true
+
+    columns:
+
+      - name: user_id
         description: >
-          Indicates whether the user has recorded no successful
-          transaction for 90 consecutive days after their last
-          successful transaction, provided the following 90-day
-          observation period exists.
-        data_type: boolean
+          Unique identifier for the user.
+        data_type: string
+        tests:
+          - not_null
+          - unique
+
+      - name: merchant_spending_category
+        description: >
+          Merchant Category Code with the highest total successful
+          transaction amount for the user during the approved
+          30-day activity window. Null when no eligible MCC is
+          available.
+        data_type: int64
