@@ -296,3 +296,110 @@ models:
           by the given transaction type during the approved 30-day
           observation window.
         data_type: float64
+
+
+  # ============================================================
+  # LEVEL 2 — BUSINESS LOGIC
+  # ============================================================
+
+    # ------------------------------------------------------------
+  # USER ENGAGEMENT
+  # ------------------------------------------------------------
+
+  - name: int_user_engagement
+
+    description: >
+      User-level Engagement KPI derived from the approved business
+      definition. This model evaluates whether the user completed
+      at least one successful transaction in three of the previous
+      four completed weeks before the analysis date.
+      Grain: one row per user.
+
+    config:
+      contract:
+        enforced: true
+
+    columns:
+
+      - name: user_id
+        description: >
+          Unique identifier for the user.
+        data_type: string
+        tests:
+          - not_null
+          - unique
+
+      - name: engagement_flag
+        description: >
+          Boolean flag indicating whether the user meets the approved
+          Engagement definition: at least one successful transaction
+          in three of the previous four completed weeks before the
+          analysis date.
+        data_type: boolean
+
+
+  # ------------------------------------------------------------
+  # USER RETENTION
+  # ------------------------------------------------------------
+
+  - name: int_user_retention
+
+    description: >
+      User-level Retention business outcome derived from the
+      approved Retention definition.
+      Grain: one row per user.
+
+    config:
+      contract:
+        enforced: true
+
+    columns:
+
+      - name: user_id
+        description: >
+          Unique identifier for the user.
+        data_type: string
+        tests:
+          - not_null
+          - unique
+
+      - name: retention_flag
+        description: >
+          Indicates whether the user has qualified for Retention
+          through 3 consecutive active completed calendar months
+          and has remained active through every subsequent
+          completed calendar month.
+        data_type: boolean
+
+
+  # ------------------------------------------------------------
+  # USER CHURN
+  # ------------------------------------------------------------
+
+  - name: int_user_churn
+
+    description: >
+      User-level Churn business outcome derived from the approved
+      Churn definition.
+      Grain: one row per user.
+
+    config:
+      contract:
+        enforced: true
+
+    columns:
+
+      - name: user_id
+        description: >
+          Unique identifier for the user.
+        data_type: string
+        tests:
+          - not_null
+          - unique
+
+      - name: churn_flag
+        description: >
+          Indicates whether the user has had no successful
+          transaction for at least 90 consecutive days, provided
+          that the required 90-day observation period exists.
+        data_type: boolean
