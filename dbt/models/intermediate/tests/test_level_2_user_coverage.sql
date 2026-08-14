@@ -27,7 +27,7 @@ engagement as (
     select
         user_id
 
-    from {{ ref('int_user_engagement') }}
+    from {{ ref('int_engagement') }}
 
 ),
 
@@ -37,7 +37,7 @@ retention as (
     select
         user_id
 
-    from {{ ref('int_user_retention') }}
+    from {{ ref('int_retention') }}
 
 ),
 
@@ -47,7 +47,7 @@ churn as (
     select
         user_id
 
-    from {{ ref('int_user_churn') }}
+    from {{ ref('int_churn') }}
 
 )
 

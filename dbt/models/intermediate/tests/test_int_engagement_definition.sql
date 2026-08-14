@@ -90,7 +90,7 @@ model_output as (
         user_id,
         engagement_flag
 
-    from {{ ref('int_user_engagement') }}
+    from {{ ref('int_engagement') }}
 
 )
 

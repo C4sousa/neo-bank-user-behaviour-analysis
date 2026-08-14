@@ -137,11 +137,6 @@ models:
           Standardised user plan segment.
         data_type: string
 
-      - name: country
-        description: >
-          User country.
-        data_type: string
-
 
   # ------------------------------------------------------------
   # CHURN

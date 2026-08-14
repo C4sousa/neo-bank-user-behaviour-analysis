@@ -128,7 +128,6 @@ models:
         data_type: int64
 
 
-
   # ============================================================
   # LEVEL 1 — REUSABLE ANALYTICAL MODELS
   # ============================================================
@@ -302,11 +301,11 @@ models:
   # LEVEL 2 — BUSINESS LOGIC
   # ============================================================
 
-    # ------------------------------------------------------------
-  # USER ENGAGEMENT
+  # ------------------------------------------------------------
+  # ENGAGEMENT
   # ------------------------------------------------------------
 
-  - name: int_user_engagement
+  - name: int_engagement
 
     description: >
       User-level Engagement KPI derived from the approved business
@@ -339,10 +338,10 @@ models:
 
 
   # ------------------------------------------------------------
-  # USER RETENTION
+  # RETENTION
   # ------------------------------------------------------------
 
-  - name: int_user_retention
+  - name: int_retention
 
     description: >
       User-level Retention business outcome derived from the
@@ -373,10 +372,10 @@ models:
 
 
   # ------------------------------------------------------------
-  # USER CHURN
+  # CHURN
   # ------------------------------------------------------------
 
-  - name: int_user_churn
+  - name: int_churn
 
     description: >
       User-level Churn business outcome derived from the approved

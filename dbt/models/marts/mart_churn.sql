@@ -1,42 +1,28 @@
 -- ============================================================
--- MART — CHURN
+-- MART: CHURN
 -- ============================================================
+-- Grain: 1 row per user
 --
 -- Purpose:
---   Analysis-ready dataset for user-level Churn hypotheses.
---
--- Grain:
---   One row per user.
---
--- KPI logic is calculated in int_user_churn.
--- This Mart combines the Churn outcome with the
--- analytical variables required for downstream analysis.
---
+-- Analysis-ready dataset for user-level Churn hypotheses.
 -- ============================================================
 
+{{ config(
+    materialized='table',
+    contract={'enforced': true}
+) }}
+
 select
-
     c.user_id,
-
-    -- --------------------------------------------------------
-    -- CHURN OUTCOME
-    -- --------------------------------------------------------
-
     c.churn_flag,
 
-    -- --------------------------------------------------------
-    -- BEHAVIOURAL VARIABLES
-    -- --------------------------------------------------------
-
+    -- Behavioural variable
     a.failed_declined_transactions_30d,
 
-    -- --------------------------------------------------------
-    -- USER PROFILE VARIABLES
-    -- --------------------------------------------------------
-
+    -- Profile variable
     p.country
 
-from {{ ref('int_user_churn') }} as c
+from {{ ref('int_churn') }} as c
 
 left join {{ ref('int_user_activity') }} as a
     on c.user_id = a.user_id

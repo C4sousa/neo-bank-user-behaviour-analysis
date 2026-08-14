@@ -1,21 +1,42 @@
 -- ============================================================
--- MART — ENGAGEMENT
+-- MART: ENGAGEMENT
 -- ============================================================
+-- Grain: 1 row per user
 --
 -- Purpose:
--- Present the approved Engagement KPI for BI consumption.
+-- Analysis-ready dataset for Engagement hypotheses.
 --
--- KPI logic is calculated in int_user_engagement.
---
--- Grain:
--- One row per user.
---
+-- Contains:
+--   - Engagement KPI
+--   - Behavioural variables
+--   - Profile variables
+--   - Time / geographic dimensions
 -- ============================================================
 
+{{ config(
+    materialized='table',
+    contract={'enforced': true}
+) }}
+
 select
+    e.user_id,
+    e.engagement_flag,
 
-    user_id,
+    -- Behavioural variables
+    a.transaction_frequency_30d,
+    a.notification_frequency_30d,
+    a.merchant_spending_category,
+    a.activity_period,
 
-    engagement_flag
+    -- Profile variables
+    p.crypto_adoption,
+    p.plan_segment,
+    p.country
 
-from {{ ref('int_user_engagement') }}
+from {{ ref('int_engagement') }} as e
+
+left join {{ ref('int_user_activity') }} as a
+    on e.user_id = a.user_id
+
+left join {{ ref('int_user_profile') }} as p
+    on e.user_id = p.user_id

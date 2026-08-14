@@ -5,6 +5,6 @@
 select
     user_id
 
-from {{ ref('int_user_retention') }}
+from {{ ref('int_retention') }}
 
 where retention_flag is null
