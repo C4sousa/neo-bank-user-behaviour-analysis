@@ -15,7 +15,8 @@
 
 with analysis_date as (
 
-    select max(created_at) as analysis_date
+    select
+        max(created_at) as analysis_date
 
     from {{ ref('stg_transactions') }}
 

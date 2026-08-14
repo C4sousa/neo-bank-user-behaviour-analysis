@@ -126,3 +126,173 @@ models:
           30-day activity window. Null when no eligible MCC is
           available.
         data_type: int64
+
+
+
+  # ============================================================
+  # LEVEL 1 — REUSABLE ANALYTICAL MODELS
+  # ============================================================
+
+  # ------------------------------------------------------------
+  # USER PROFILE
+  # ------------------------------------------------------------
+
+  - name: int_user_profile
+
+    description: >
+      Reusable user-level profile and segmentation attributes derived
+      from the users domain. This model represents who the user is
+      and provides approved profile attributes for downstream
+      analytical models.
+      Grain: one row per user.
+
+    config:
+      contract:
+        enforced: true
+
+    columns:
+
+      - name: user_id
+        description: >
+          Unique identifier for the user.
+        data_type: string
+        tests:
+          - not_null
+          - unique
+
+      - name: country
+        description: >
+          Country associated with the user.
+        data_type: string
+
+      - name: crypto_adoption
+        description: >
+          Binary indicator showing whether cryptocurrency functionality
+          is enabled for the user. 0 = not enabled, 1 = enabled.
+        data_type: int64
+
+      - name: plan_segment
+        description: >
+          Standardised user plan segment. PREMIUM represents users
+          on the Premium plan; all other users are classified as
+          STANDARD.
+        data_type: string
+
+
+  # ------------------------------------------------------------
+  # USER ACTIVITY
+  # ------------------------------------------------------------
+
+  - name: int_user_activity
+
+    description: >
+      Reusable user-level behavioural metrics assembled from the
+      transaction, notification, and merchant activity domains.
+      This model represents what the user has done and provides
+      approved behavioural variables for downstream analytical
+      models.
+      Grain: one row per user.
+
+    config:
+      contract:
+        enforced: true
+
+    columns:
+
+      - name: user_id
+        description: >
+          Unique identifier for the user.
+        data_type: string
+        tests:
+          - not_null
+          - unique
+
+      - name: transaction_frequency_30d
+        description: >
+          Count of successful transactions completed by the user
+          during the approved 30-day activity window.
+        data_type: int64
+
+      - name: notification_frequency_30d
+        description: >
+          Count of successfully delivered notifications received by
+          the user during the approved 30-day activity window.
+          Represents notification exposure rather than interaction.
+        data_type: int64
+
+      - name: failed_declined_transactions_30d
+        description: >
+          Count of FAILED or DECLINED transactions completed by the
+          user during the approved 30-day activity window.
+        data_type: int64
+
+      - name: merchant_spending_category
+        description: >
+          Merchant Category Code with the highest total successful
+          transaction amount for the user during the approved
+          30-day activity window. Null when no eligible MCC is
+          available.
+        data_type: int64
+
+      - name: activity_period
+        description: >
+          Calendar week associated with the user's most recent
+          successful transaction. The calendar week begins on Monday.
+        data_type: date
+
+      - name: last_successful_transaction_date
+        description: >
+          Date of the user's most recent successful transaction.
+        data_type: date
+
+
+  # ------------------------------------------------------------
+  # USER TRANSACTION TYPES
+  # ------------------------------------------------------------
+
+  - name: int_user_transaction_types
+
+    description: >
+      Reusable transaction-type behavioural model derived directly
+      from transaction data. This model represents how the user
+      transacts and preserves the natural user by transaction-type
+      analytical grain.
+      Grain: one row per user per transaction type.
+
+    config:
+      contract:
+        enforced: true
+
+    columns:
+
+      - name: user_id
+        description: >
+          Unique identifier for the user. The user may appear in
+          multiple rows because the model grain is one row per
+          user per transaction type.
+        data_type: string
+        tests:
+          - not_null
+
+      - name: transaction_type
+        description: >
+          Transaction type supplied by the source dataset. Source
+          transaction-type categories are preserved without additional
+          grouping or reclassification.
+        data_type: string
+        tests:
+          - not_null
+
+      - name: transaction_count
+        description: >
+          Count of successful transactions of the given transaction
+          type completed by the user during the approved 30-day
+          observation window.
+        data_type: int64
+
+      - name: transaction_share
+        description: >
+          Proportion of the user's successful transactions represented
+          by the given transaction type during the approved 30-day
+          observation window.
+        data_type: float64
