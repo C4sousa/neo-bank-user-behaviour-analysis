@@ -1,14 +1,18 @@
 -- ============================================================
--- LEVEL 2 — USER COVERAGE TEST
+-- KPI MODELS — USER COVERAGE TEST
 -- ============================================================
 --
--- Engagement, Retention and Churn are user-level models.
+-- Purpose:
+--   Verify that every user in stg_users is represented in
+--   each user-level KPI model.
 --
--- Each model should contain one row for every user in
--- stg_users.
+-- Expected grain:
+--   One row per user in:
+--     int_engagement
+--     int_retention
+--     int_churn
 --
 -- A passing test returns zero rows.
---
 -- ============================================================
 
 

@@ -197,7 +197,6 @@ models:
           Country associated with the user.
         data_type: string
 
-
   # ------------------------------------------------------------
   # CHURN BY TRANSACTION TYPE
   # ------------------------------------------------------------

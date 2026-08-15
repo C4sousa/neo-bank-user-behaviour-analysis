@@ -3,47 +3,45 @@
     contract={'enforced': true}
 ) }}
 
-WITH retention AS (
+-- ============================================================
+-- MART — RETENTION
+-- ============================================================
+--
+-- Purpose:
+--   Analysis-ready user-level dataset for approved Retention
+--   hypotheses.
+--
+-- Grain:
+--   One row per user.
+--
+-- Business outcome:
+--   retention_flag is consumed from int_retention.
+--
+-- Analytical variables:
+--   Transaction and notification activity are sourced from
+--   int_user_activity.
+--   Profile attributes are sourced from int_user_profile.
+--
+-- The Mart does not recreate Retention logic.
+-- ============================================================
 
-    SELECT
-        user_id,
-        retention_flag
-    FROM {{ ref('int_retention') }}
-
-),
-
-activity AS (
-
-    SELECT
-        user_id,
-        transaction_frequency_30d,
-        notification_frequency_30d
-    FROM {{ ref('int_user_activity') }}
-
-),
-
-profile AS (
-
-    SELECT
-        user_id,
-        crypto_adoption,
-        plan_segment
-    FROM {{ ref('int_user_profile') }}
-
-)
-
-SELECT
+select
     r.user_id,
+
+    -- Business outcome
     r.retention_flag,
+
+    -- Analytical variables
     a.transaction_frequency_30d,
     a.notification_frequency_30d,
+
     p.crypto_adoption,
     p.plan_segment
 
-FROM retention AS r
+from {{ ref('int_retention') }} as r
 
-LEFT JOIN activity AS a
-    ON r.user_id = a.user_id
+left join {{ ref('int_user_activity') }} as a
+    on r.user_id = a.user_id
 
-LEFT JOIN profile AS p
-    ON r.user_id = p.user_id
+left join {{ ref('int_user_profile') }} as p
+    on r.user_id = p.user_id

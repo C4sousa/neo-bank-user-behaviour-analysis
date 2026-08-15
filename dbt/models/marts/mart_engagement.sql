@@ -3,53 +3,48 @@
     contract={'enforced': true}
 ) }}
 
-WITH engagement AS (
+-- ============================================================
+-- MART — ENGAGEMENT
+-- ============================================================
+--
+-- Purpose:
+--   Analysis-ready user-level dataset for approved Engagement
+--   hypotheses.
+--
+-- Grain:
+--   One row per user.
+--
+-- Business outcome:
+--   engagement_flag is consumed from int_engagement.
+--
+-- Analytical variables:
+--   Transaction, notification and merchant activity are sourced
+--   from int_user_activity.
+--   Profile attributes are sourced from int_user_profile.
+--
+-- The Mart does not recreate Engagement logic.
+-- ============================================================
 
-    SELECT
-        user_id,
-        engagement_flag
-    FROM {{ ref('int_engagement') }}
-
-),
-
-activity AS (
-
-    SELECT
-        user_id,
-        transaction_frequency_30d,
-        notification_frequency_30d,
-        merchant_spending_category,
-        activity_period
-    FROM {{ ref('int_user_activity') }}
-
-),
-
-profile AS (
-
-    SELECT
-        user_id,
-        crypto_adoption,
-        plan_segment,
-        country
-    FROM {{ ref('int_user_profile') }}
-
-)
-
-SELECT
+select
     e.user_id,
+
+    -- Business outcome
     e.engagement_flag,
+
+    -- Analytical variables
     a.transaction_frequency_30d,
     a.notification_frequency_30d,
     a.merchant_spending_category,
     a.activity_period,
+
     p.crypto_adoption,
     p.plan_segment,
     p.country
 
-FROM engagement AS e
+from {{ ref('int_engagement') }} as e
 
-LEFT JOIN activity AS a
-    ON e.user_id = a.user_id
+left join {{ ref('int_user_activity') }} as a
+    on e.user_id = a.user_id
 
-LEFT JOIN profile AS p
-    ON e.user_id = p.user_id
+left join {{ ref('int_user_profile') }} as p
+    on e.user_id = p.user_id
