@@ -36,7 +36,7 @@ models:
       - name: engagement_flag
         description: >
           Business-defined Engagement outcome calculated by
-          int_user_engagement.
+          int_engagement.
         data_type: boolean
 
       - name: transaction_frequency_30d

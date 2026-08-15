@@ -7,6 +7,62 @@ models:
   # ============================================================
 
   # ------------------------------------------------------------
+  # SUCCESSFUL TRANSACTION EVENTS
+  # ------------------------------------------------------------
+
+  - name: int_successful_transaction_events
+
+    description: >
+      Successful transaction events derived from the transaction
+      domain. This model provides reusable event-level transaction
+      dates and calendar periods for downstream business KPI logic.
+      Grain: one row per successful transaction.
+
+    config:
+      contract:
+        enforced: true
+
+    columns:
+
+      - name: transaction_id
+        description: >
+          Unique identifier for the successful transaction.
+        data_type: string
+        tests:
+          - not_null
+          - unique
+
+      - name: user_id
+        description: >
+          Identifier of the user who completed the successful
+          transaction.
+        data_type: string
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_users')
+                field: user_id
+
+      - name: transaction_date
+        description: >
+          Calendar date on which the successful transaction
+          was recorded.
+        data_type: date
+
+      - name: transaction_week
+        description: >
+          Monday-based calendar week associated with the
+          successful transaction.
+        data_type: date
+
+      - name: transaction_month
+        description: >
+          Calendar month associated with the successful
+          transaction.
+        data_type: date
+
+  # ------------------------------------------------------------
   # TRANSACTION ACTIVITY
   # ------------------------------------------------------------
 
@@ -41,8 +97,9 @@ models:
 
       - name: failed_declined_transactions_30d
         description: >
-          Count of FAILED or DECLINED transactions completed by the
-          user during the approved 30-day activity window.
+          Count of transactions attempted by the user during the
+          approved 30-day activity window that ended in a
+          FAILED or DECLINED state.
         data_type: int64
 
       - name: activity_period
