@@ -62,6 +62,7 @@ models:
           transaction.
         data_type: date
 
+
   # ------------------------------------------------------------
   # TRANSACTION ACTIVITY
   # ------------------------------------------------------------
@@ -368,8 +369,12 @@ models:
       User-level Engagement KPI derived from the approved business
       definition. This model evaluates whether the user completed
       at least one successful transaction in three of the previous
-      four completed weeks before the analysis date.
+      four completed Monday-based calendar weeks before the analysis
+      date.
       Grain: one row per user.
+
+      The reusable successful transaction event logic is provided
+      by int_successful_transaction_events.
 
     config:
       contract:
@@ -389,8 +394,8 @@ models:
         description: >
           Boolean flag indicating whether the user meets the approved
           Engagement definition: at least one successful transaction
-          in three of the previous four completed weeks before the
-          analysis date.
+          in three of the previous four completed Monday-based
+          calendar weeks before the analysis date.
         data_type: boolean
 
 
@@ -401,9 +406,14 @@ models:
   - name: int_retention
 
     description: >
-      User-level Retention business outcome derived from the
-      approved Retention definition.
+      User-level Retention business outcome derived from the approved
+      Retention definition.
       Grain: one row per user.
+
+      The reusable successful transaction event logic is provided
+      by int_successful_transaction_events. Calendar-month activity
+      and consecutive-month evaluation are performed here because
+      they represent the Retention business definition.
 
     config:
       contract:
@@ -422,9 +432,9 @@ models:
       - name: retention_flag
         description: >
           Indicates whether the user has qualified for Retention
-          through 3 consecutive active completed calendar months
-          and has remained active through every subsequent
-          completed calendar month.
+          through three consecutive active completed calendar months
+          and has remained active through every subsequent completed
+          calendar month.
         data_type: boolean
 
 
@@ -438,6 +448,11 @@ models:
       User-level Churn business outcome derived from the approved
       Churn definition.
       Grain: one row per user.
+
+      The reusable successful transaction event logic is provided
+      by int_successful_transaction_events. The 90-day inactivity
+      evaluation remains in this KPI model because it represents
+      the approved Churn business definition.
 
     config:
       contract:

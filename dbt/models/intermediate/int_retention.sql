@@ -20,8 +20,8 @@
 --   A user who later returns can qualify again after another
 --   3 consecutive active completed calendar months.
 --
--- The Retention definition is calculated independently from
--- the other KPI models.
+-- Successful transaction event logic is provided by:
+--   int_successful_transaction_events
 --
 -- ============================================================
 
@@ -62,30 +62,12 @@ last_completed_month as (
 
 
 -- ============================================================
--- SUCCESSFUL TRANSACTIONS
--- ============================================================
-
-successful_transactions as (
-
-    select
-        t.user_id,
-
-        date_trunc(
-            date(t.created_at),
-            month
-        ) as transaction_month
-
-    from {{ ref('stg_transactions') }} as t
-
-    where
-        t.transaction_state = 'COMPLETED'
-
-),
-
-
--- ============================================================
 -- MONTHLY ACTIVITY
 -- ============================================================
+--
+-- Successful transaction events are already filtered and
+-- assigned to calendar months in:
+--   int_successful_transaction_events
 --
 -- Only completed calendar months are eligible for
 -- Retention evaluation.
@@ -98,7 +80,7 @@ monthly_activity as (
         s.user_id,
         s.transaction_month
 
-    from successful_transactions as s
+    from {{ ref('int_successful_transaction_events') }} as s
 
     cross join last_completed_month as l
 

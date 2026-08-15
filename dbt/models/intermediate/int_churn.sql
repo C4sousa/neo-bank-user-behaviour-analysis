@@ -16,10 +16,14 @@
 --
 --   Every successful transaction resets the 90-day clock.
 --
+-- Successful transaction event logic is provided by:
+--   int_successful_transaction_events
+--
 -- The KPI is calculated independently from the other
 -- Level 2 business logic models.
 --
 -- ============================================================
+
 
 with analysis_date as (
 
@@ -30,23 +34,37 @@ with analysis_date as (
 
 ),
 
+
+-- ============================================================
+-- LAST SUCCESSFUL TRANSACTION
+-- ============================================================
+--
+-- The reusable successful transaction events model already
+-- contains only successful transactions and provides the
+-- transaction_date field required for the Churn definition.
+--
+-- ============================================================
+
 last_successful_activity as (
 
     select
         user_id,
 
         max(
-            date(created_at)
+            transaction_date
         ) as last_successful_transaction_date
 
-    from {{ ref('stg_transactions') }}
-
-    where transaction_state = 'COMPLETED'
+    from {{ ref('int_successful_transaction_events') }}
 
     group by
         user_id
 
 )
+
+
+-- ============================================================
+-- FINAL USER CHURN MODEL
+-- ============================================================
 
 select
     u.user_id,
