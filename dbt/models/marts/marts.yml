@@ -38,6 +38,8 @@ models:
           Business-defined Engagement outcome calculated by
           int_engagement.
         data_type: boolean
+        tests:
+          - not_null
 
       - name: transaction_frequency_30d
         description: >
@@ -45,40 +47,45 @@ models:
           during the approved 30-day activity window.
         data_type: int64
 
+      - name: crypto_adoption
+        description: >
+          Binary indicator representing whether cryptocurrency
+          functionality is enabled for the user.
+          0 = not enabled, 1 = enabled.
+        data_type: int64
+
+      - name: plan_segment
+        description: >
+          Standardised user plan segment. PREMIUM represents users
+          on the Premium plan; all other users are classified as
+          STANDARD.
+        data_type: string
+
       - name: notification_frequency_30d
         description: >
           Count of successfully delivered notifications received
           by the user during the approved 30-day activity window.
+          Represents notification exposure rather than interaction.
         data_type: int64
 
       - name: merchant_spending_category
         description: >
           Merchant Category Code with the highest total successful
           transaction amount for the user during the approved
-          30-day activity window.
+          30-day activity window. Null when no eligible MCC is
+          available.
         data_type: int64
+
+      - name: country
+        description: >
+          Country associated with the user.
+        data_type: string
 
       - name: activity_period
         description: >
           Calendar week associated with the user's most recent
           successful transaction. The calendar week begins on Monday.
         data_type: date
-
-      - name: crypto_adoption
-        description: >
-          Binary indicator representing whether crypto functionality
-          is enabled for the user.
-        data_type: int64
-
-      - name: plan_segment
-        description: >
-          Standardised user plan segment.
-        data_type: string
-
-      - name: country
-        description: >
-          User country.
-        data_type: string
 
 
   # ------------------------------------------------------------
@@ -111,8 +118,10 @@ models:
       - name: retention_flag
         description: >
           Business-defined Retention outcome calculated by
-          int_user_retention.
+          int_retention.
         data_type: boolean
+        tests:
+          - not_null
 
       - name: transaction_frequency_30d
         description: >
@@ -120,22 +129,26 @@ models:
           during the approved 30-day activity window.
         data_type: int64
 
-      - name: notification_frequency_30d
-        description: >
-          Count of successfully delivered notifications received
-          by the user during the approved 30-day activity window.
-        data_type: int64
-
       - name: crypto_adoption
         description: >
-          Binary indicator representing whether crypto functionality
-          is enabled for the user.
+          Binary indicator representing whether cryptocurrency
+          functionality is enabled for the user.
+          0 = not enabled, 1 = enabled.
         data_type: int64
 
       - name: plan_segment
         description: >
-          Standardised user plan segment.
+          Standardised user plan segment. PREMIUM represents users
+          on the Premium plan; all other users are classified as
+          STANDARD.
         data_type: string
+
+      - name: notification_frequency_30d
+        description: >
+          Count of successfully delivered notifications received
+          by the user during the approved 30-day activity window.
+          Represents notification exposure rather than interaction.
+        data_type: int64
 
 
   # ------------------------------------------------------------
@@ -145,8 +158,8 @@ models:
   - name: mart_churn
 
     description: >
-      Analysis-ready user-level dataset for approved Churn
-      hypotheses. Combines the standardised Churn outcome
+      Analysis-ready user-level dataset for approved user-level
+      Churn hypotheses. Combines the standardised Churn outcome
       with the analytical variables required for downstream
       investigation.
       Grain: one row per user.
@@ -168,18 +181,20 @@ models:
       - name: churn_flag
         description: >
           Business-defined Churn outcome calculated by
-          int_user_churn.
+          int_churn.
         data_type: boolean
+        tests:
+          - not_null
 
       - name: failed_declined_transactions_30d
         description: >
-          Count of FAILED or DECLINED transactions completed by
+          Count of FAILED or DECLINED transactions attempted by
           the user during the approved 30-day activity window.
         data_type: int64
 
       - name: country
         description: >
-          User country.
+          Country associated with the user.
         data_type: string
 
 

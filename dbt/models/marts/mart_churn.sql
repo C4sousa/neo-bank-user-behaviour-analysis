@@ -1,31 +1,41 @@
 -- ============================================================
--- MART: CHURN
+-- MART — CHURN
 -- ============================================================
--- Grain: 1 row per user
 --
 -- Purpose:
--- Analysis-ready dataset for user-level Churn hypotheses.
+--   Analysis-ready user-level dataset for approved user-level
+--   Churn hypotheses.
+--
+-- Grain:
+--   One row per user.
+--
+-- Business outcome:
+--   churn_flag is consumed from int_churn.
+--
+-- Analytical variables:
+--   Failed/declined transaction behaviour is sourced from
+--   int_user_activity.
+--   Country is sourced from int_user_profile.
+--
+-- The Mart does not recreate Churn logic.
+--
 -- ============================================================
 
-{{ config(
-    materialized='table',
-    contract={'enforced': true}
-) }}
-
 select
-    c.user_id,
+
+    p.user_id,
+
+    -- Business outcome
     c.churn_flag,
 
-    -- Behavioural variable
+    -- Analytical variables
     a.failed_declined_transactions_30d,
-
-    -- Profile variable
     p.country
 
-from {{ ref('int_churn') }} as c
+from {{ ref('int_user_profile') }} as p
 
 left join {{ ref('int_user_activity') }} as a
-    on c.user_id = a.user_id
+    on p.user_id = a.user_id
 
-left join {{ ref('int_user_profile') }} as p
-    on c.user_id = p.user_id
+left join {{ ref('int_churn') }} as c
+    on p.user_id = c.user_id

@@ -1,33 +1,49 @@
--- ============================================================
--- MART: RETENTION
--- ============================================================
--- Grain: 1 row per user
---
--- Purpose:
--- Analysis-ready dataset for Retention hypotheses.
--- ============================================================
-
 {{ config(
     materialized='table',
     contract={'enforced': true}
 ) }}
 
-select
+WITH retention AS (
+
+    SELECT
+        user_id,
+        retention_flag
+    FROM {{ ref('int_retention') }}
+
+),
+
+activity AS (
+
+    SELECT
+        user_id,
+        transaction_frequency_30d,
+        notification_frequency_30d
+    FROM {{ ref('int_user_activity') }}
+
+),
+
+profile AS (
+
+    SELECT
+        user_id,
+        crypto_adoption,
+        plan_segment
+    FROM {{ ref('int_user_profile') }}
+
+)
+
+SELECT
     r.user_id,
     r.retention_flag,
-
-    -- Behavioural variables
     a.transaction_frequency_30d,
     a.notification_frequency_30d,
-
-    -- Profile variables
     p.crypto_adoption,
     p.plan_segment
 
-from {{ ref('int_retention') }} as r
+FROM retention AS r
 
-left join {{ ref('int_user_activity') }} as a
-    on r.user_id = a.user_id
+LEFT JOIN activity AS a
+    ON r.user_id = a.user_id
 
-left join {{ ref('int_user_profile') }} as p
-    on r.user_id = p.user_id
+LEFT JOIN profile AS p
+    ON r.user_id = p.user_id
