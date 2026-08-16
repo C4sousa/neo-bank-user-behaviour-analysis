@@ -15,7 +15,8 @@ models:
     description: >
       Successful transaction events derived from the transaction
       domain. This model provides reusable event-level transaction
-      dates and calendar periods for downstream business KPI logic.
+      dates, calendar periods, and transaction-type information
+      for downstream business KPI and analytical logic.
       Grain: one row per successful transaction.
 
     config:
@@ -43,6 +44,15 @@ models:
               arguments:
                 to: ref('stg_users')
                 field: user_id
+
+      - name: transaction_type
+        description: >
+          Transaction type supplied by the source dataset. Source
+          transaction-type categories are preserved without additional
+          grouping or reclassification.
+        data_type: string
+        tests:
+          - not_null
 
       - name: transaction_date
         description: >
@@ -311,9 +321,9 @@ models:
 
     description: >
       Reusable transaction-type behavioural model derived directly
-      from transaction data. This model represents how the user
-      transacts and preserves the natural user by transaction-type
-      analytical grain.
+      from successful transaction events. This model represents how
+      the user transacts and preserves the natural user by
+      transaction-type analytical grain.
       Grain: one row per user per transaction type.
 
     config:
@@ -343,15 +353,15 @@ models:
       - name: transaction_count
         description: >
           Count of successful transactions of the given transaction
-          type completed by the user during the approved 30-day
-          observation window.
+          type for the user across the available successful
+          transaction history.
         data_type: int64
 
       - name: transaction_share
         description: >
           Proportion of the user's successful transactions represented
-          by the given transaction type during the approved 30-day
-          observation window.
+          by the given transaction type across the available successful
+          transaction history.
         data_type: float64
 
 

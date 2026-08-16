@@ -1,55 +1,49 @@
--- Builds the reusable transaction-type activity model.
+-- ============================================================
+-- USER TRANSACTION TYPES
+-- ============================================================
 --
 -- Purpose:
--- Represent how the user transacts.
+--   Represent how the user transacts for H12 analysis.
 --
 -- Grain:
--- One row per user × transaction type.
+--   One row per user × transaction type.
 --
--- Transaction types are taken directly from the source
--- dataset without grouping or reclassification.
+-- Transaction types:
+--   Taken directly from the source dataset without grouping
+--   or reclassification.
 --
--- Only successful transactions are included.
+-- Successful transactions:
+--   Only transactions with transaction_state = 'COMPLETED'
+--   are included.
 --
--- The approved 30-day observation window is used.
+-- Time:
+--   No analytical observation window is imposed here.
+--   The model preserves the available successful transaction
+--   history so downstream analysis can apply the appropriate
+--   observation period for the hypothesis being investigated.
+--
+-- ============================================================
 
-with analysis_date as (
+with transaction_type_activity as (
 
     select
-        max(created_at) as analysis_date
-
-    from {{ ref('stg_transactions') }}
-
-),
-
-transaction_type_activity as (
-
-    select
-        t.user_id,
-        t.transaction_type,
+        user_id,
+        transaction_type,
 
         count(*) as transaction_count
 
-    from {{ ref('stg_transactions') }} as t
+    from {{ ref('int_successful_transaction_events') }}
 
-    cross join analysis_date as a
-
-    where
-        t.transaction_state = 'COMPLETED'
-        and t.transaction_type is not null
-        and t.created_at >= timestamp_sub(
-            a.analysis_date,
-            interval 30 day
-        )
-        and t.created_at < a.analysis_date
+    where transaction_type is not null
 
     group by
-        t.user_id,
-        t.transaction_type
+        user_id,
+        transaction_type
 
 )
 
 select
+
     user_id,
 
     transaction_type,

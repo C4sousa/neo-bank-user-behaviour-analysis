@@ -4,10 +4,15 @@
 -- Grain: 1 row per user x transaction_type
 --
 -- Purpose:
--- Analysis-ready dataset for Transaction Type -> Churn.
+--   Analysis-ready dataset for Transaction Type -> Churn.
+--
+-- transaction_type is preserved at its natural analytical grain.
+-- transaction_count and transaction_share come from the reusable
+-- full-history transaction-type model.
 --
 -- churn_flag is a user-level outcome repeated across the
 -- user's transaction-type rows.
+--
 -- ============================================================
 
 {{ config(
@@ -16,10 +21,15 @@
 ) }}
 
 select
+
     t.user_id,
+
     t.transaction_type,
+
     t.transaction_count,
+
     t.transaction_share,
+
     c.churn_flag
 
 from {{ ref('int_user_transaction_types') }} as t

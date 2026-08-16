@@ -232,18 +232,20 @@ models:
       - name: transaction_count
         description: >
           Count of successful transactions for the user and
-          transaction type during the approved 30-day window.
+          transaction type across the available successful
+          transaction history.
         data_type: int64
 
       - name: transaction_share
         description: >
           Share of the user's successful transactions represented
-          by the transaction type during the approved 30-day window.
+          by the transaction type across the available successful
+          transaction history.
         data_type: float64
 
       - name: churn_flag
         description: >
-          User-level Churn outcome calculated by int_user_churn.
+          User-level Churn outcome calculated by int_churn.
           The outcome is repeated across the user's transaction-type
           rows without changing the model grain.
         data_type: boolean
