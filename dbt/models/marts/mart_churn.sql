@@ -29,7 +29,7 @@ select
     c.churn_flag,
 
     -- Analytical variables
-    a.failed_declined_transactions_30d,
+    a.failed_declined_transactions,
     p.country
 
 from {{ ref('int_user_profile') }} as p

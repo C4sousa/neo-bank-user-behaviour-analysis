@@ -32,8 +32,8 @@ select
     r.retention_flag,
 
     -- Analytical variables
-    a.transaction_frequency_30d,
-    a.notification_frequency_30d,
+    a.transaction_frequency,
+    a.notification_frequency,
 
     p.crypto_adoption,
     p.plan_segment

@@ -41,10 +41,10 @@ models:
         tests:
           - not_null
 
-      - name: transaction_frequency_30d
+      - name: transaction_frequency
         description: >
           Count of successful transactions completed by the user
-          during the approved 30-day activity window.
+          during the available activity history.
         data_type: int64
 
       - name: crypto_adoption
@@ -61,10 +61,10 @@ models:
           STANDARD.
         data_type: string
 
-      - name: notification_frequency_30d
+      - name: notification_frequency
         description: >
           Count of successfully delivered notifications received
-          by the user during the approved 30-day activity window.
+          by the user during the available activity history.
           Represents notification exposure rather than interaction.
         data_type: int64
 
@@ -72,7 +72,7 @@ models:
         description: >
           Merchant Category Code with the highest total successful
           transaction amount for the user during the approved
-          30-day activity window. Null when no eligible MCC is
+          available activity history. Null when no eligible MCC is
           available.
         data_type: int64
 
@@ -123,10 +123,10 @@ models:
         tests:
           - not_null
 
-      - name: transaction_frequency_30d
+      - name: transaction_frequency
         description: >
           Count of successful transactions completed by the user
-          during the approved 30-day activity window.
+          during the available activity history.
         data_type: int64
 
       - name: crypto_adoption
@@ -143,10 +143,10 @@ models:
           STANDARD.
         data_type: string
 
-      - name: notification_frequency_30d
+      - name: notification_frequency
         description: >
           Count of successfully delivered notifications received
-          by the user during the approved 30-day activity window.
+          by the user during the available activity history.
           Represents notification exposure rather than interaction.
         data_type: int64
 
@@ -186,10 +186,10 @@ models:
         tests:
           - not_null
 
-      - name: failed_declined_transactions_30d
+      - name: failed_declined_transactions
         description: >
           Count of FAILED or DECLINED transactions attempted by
-          the user during the approved 30-day activity window.
+          the user during the available activity history.
         data_type: int64
 
       - name: country

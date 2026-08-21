@@ -32,8 +32,8 @@ select
     e.engagement_flag,
 
     -- Analytical variables
-    a.transaction_frequency_30d,
-    a.notification_frequency_30d,
+    a.transaction_frequency,
+    a.notification_frequency,
     a.merchant_spending_category,
     a.activity_period,
 
