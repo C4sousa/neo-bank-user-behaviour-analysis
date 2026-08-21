@@ -100,17 +100,17 @@ models:
           - not_null
           - unique
 
-      - name: transaction_frequency_30d
+      - name: transaction_frequency
         description: >
           Count of successful transactions completed by the user
-          during the approved 30-day activity window.
+          across the available transaction history.
         data_type: int64
 
-      - name: failed_declined_transactions_30d
+      - name: failed_declined_transactions
         description: >
-          Count of transactions attempted by the user during the
-          approved 30-day activity window that ended in a
-          FAILED or DECLINED state.
+          Count of transactions attempted by the user across the
+          available transaction history that ended in a FAILED or
+          DECLINED state.
         data_type: int64
 
       - name: activity_period
@@ -152,10 +152,10 @@ models:
           - not_null
           - unique
 
-      - name: notification_frequency_30d
+      - name: notification_frequency
         description: >
           Count of successfully delivered notifications received by
-          the user during the approved 30-day activity window.
+          the user across the available notification history.
           Represents notification exposure rather than interaction.
         data_type: int64
 
@@ -190,9 +190,8 @@ models:
       - name: merchant_spending_category
         description: >
           Merchant Category Code with the highest total successful
-          transaction amount for the user during the approved
-          30-day activity window. Null when no eligible MCC is
-          available.
+          transaction amount for the user across the available
+          transaction history. Null when no eligible MCC is available.
         data_type: int64
 
 
@@ -274,31 +273,30 @@ models:
           - not_null
           - unique
 
-      - name: transaction_frequency_30d
+      - name: transaction_frequency
         description: >
           Count of successful transactions completed by the user
-          during the approved 30-day activity window.
+          across the available transaction history.
         data_type: int64
 
-      - name: notification_frequency_30d
+      - name: notification_frequency
         description: >
           Count of successfully delivered notifications received by
-          the user during the approved 30-day activity window.
+          the user across the available notification history.
           Represents notification exposure rather than interaction.
         data_type: int64
 
-      - name: failed_declined_transactions_30d
+      - name: failed_declined_transactions
         description: >
           Count of FAILED or DECLINED transactions completed by the
-          user during the approved 30-day activity window.
+          user across the available transaction history.
         data_type: int64
 
       - name: merchant_spending_category
         description: >
           Merchant Category Code with the highest total successful
-          transaction amount for the user during the approved
-          30-day activity window. Null when no eligible MCC is
-          available.
+          transaction amount for the user across the available
+          transaction history. Null when no eligible MCC is available.
         data_type: int64
 
       - name: activity_period

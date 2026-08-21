@@ -11,11 +11,11 @@
 select
     u.user_id,
 
-    t.transaction_frequency_30d,
+    t.transaction_frequency,
 
-    n.notification_frequency_30d,
+    n.notification_frequency,
 
-    t.failed_declined_transactions_30d,
+    t.failed_declined_transactions,
 
     m.merchant_spending_category,
 
