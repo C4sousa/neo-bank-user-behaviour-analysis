@@ -113,6 +113,12 @@ models:
           DECLINED state.
         data_type: int64
 
+      - name: total_transaction_count
+        description: >
+          Total number of transactions recorded for the user across
+          all transaction states in the available transaction history.
+        data_type: int64
+
       - name: activity_period
         description: >
           Calendar week associated with the user's most recent
@@ -292,6 +298,12 @@ models:
           user across the available transaction history.
         data_type: int64
 
+      - name: total_transaction_count
+        description: >
+          Total number of transactions recorded for the user across
+          all transaction states in the available transaction history.
+        data_type: int64
+
       - name: merchant_spending_category
         description: >
           Merchant Category Code with the highest total successful
@@ -316,6 +328,7 @@ models:
   # ------------------------------------------------------------
 
   - name: int_activation
+
     description: >
       User-level Activation KPI derived from the approved Activation
       definition.

@@ -192,10 +192,17 @@ models:
           the user during the available activity history.
         data_type: int64
 
+      - name: total_transaction_count
+        description: >
+          Total number of transactions recorded for the user across
+          all transaction states in the available transaction history.
+        data_type: int64
+
       - name: country
         description: >
           Country associated with the user.
         data_type: string
+
 
   # ------------------------------------------------------------
   # CHURN BY TRANSACTION TYPE

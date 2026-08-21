@@ -13,8 +13,8 @@
 --   churn_flag is consumed from int_churn.
 --
 -- Analytical variables:
---   Failed/declined transaction behaviour is sourced from
---   int_user_activity.
+--   Failed/declined transaction behaviour and total transaction
+--   count are sourced from int_user_activity.
 --   Country is sourced from int_user_profile.
 --
 -- The Mart does not recreate Churn logic.
@@ -30,6 +30,7 @@ select
 
     -- Analytical variables
     a.failed_declined_transactions,
+    a.total_transaction_count,
     p.country
 
 from {{ ref('int_user_profile') }} as p

@@ -17,6 +17,8 @@ select
 
     t.failed_declined_transactions,
 
+    t.total_transaction_count,
+
     m.merchant_spending_category,
 
     t.activity_period,

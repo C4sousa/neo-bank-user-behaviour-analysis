@@ -15,6 +15,8 @@ with transaction_activity as (
             t.transaction_state in ('FAILED', 'DECLINED')
         ) as failed_declined_transactions,
 
+        count(*) as total_transaction_count,
+
         max(
             case
                 when t.transaction_state = 'COMPLETED'
@@ -40,6 +42,7 @@ select
     user_id,
     transaction_frequency,
     failed_declined_transactions,
+    total_transaction_count,
     activity_period,
     last_successful_transaction_date
 
