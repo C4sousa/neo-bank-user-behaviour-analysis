@@ -312,6 +312,40 @@ models:
 
 
   # ------------------------------------------------------------
+  # USER ACTIVATION
+  # ------------------------------------------------------------
+
+  - name: int_activation
+    description: >
+      User-level Activation KPI derived from the approved Activation
+      definition.
+      Grain: one row per user.
+
+      Activation is achieved when a user completes at least one
+      successful transaction.
+
+    config:
+      contract:
+        enforced: true
+
+    columns:
+
+      - name: user_id
+        description: >
+          Unique identifier for the user.
+        data_type: string
+        tests:
+          - not_null
+          - unique
+
+      - name: activation_flag
+        description: >
+          Boolean flag indicating whether the user has completed
+          at least one successful transaction.
+        data_type: boolean
+
+
+  # ------------------------------------------------------------
   # USER TRANSACTION TYPES
   # ------------------------------------------------------------
 

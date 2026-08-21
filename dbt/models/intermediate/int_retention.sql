@@ -1,118 +1,56 @@
 -- ============================================================
--- USER RETENTION MODEL
+-- USER RETENTION
 -- ============================================================
 --
--- Purpose:
---   Represent the approved business definition of Retention.
---
--- Grain:
---   One row per user.
---
--- Retention:
---   A user qualifies after 3 consecutive completed calendar
---   months with at least one successful transaction.
---
---   After qualification, every subsequent completed calendar
---   month must contain at least one successful transaction.
---
---   Missing a completed calendar month ends Retention.
---
---   A user who later returns can qualify again after another
---   3 consecutive active completed calendar months.
---
--- Successful transaction event logic is provided by:
---   int_successful_transaction_events
---
+-- Retention logic remains unchanged.
+-- Activation acts as the lifecycle gate:
+-- users who never activated cannot be Retained.
 -- ============================================================
-
 
 with analysis_date as (
 
     select
         max(created_at) as analysis_date
-
     from {{ ref('stg_transactions') }}
 
 ),
-
-
--- ============================================================
--- LAST COMPLETED CALENDAR MONTH
--- ============================================================
---
--- The current calendar month is incomplete and therefore
--- cannot be evaluated for Retention.
---
--- ============================================================
 
 last_completed_month as (
 
     select
         date_trunc(
             date_sub(
-                date(a.analysis_date),
+                date(d.analysis_date),
                 interval 1 month
             ),
             month
         ) as last_completed_month
-
-    from analysis_date as a
+    from analysis_date as d
 
 ),
-
-
--- ============================================================
--- MONTHLY ACTIVITY
--- ============================================================
---
--- Successful transaction events are already filtered and
--- assigned to calendar months in:
---   int_successful_transaction_events
---
--- Only completed calendar months are eligible for
--- Retention evaluation.
---
--- ============================================================
 
 monthly_activity as (
 
     select distinct
         s.user_id,
         s.transaction_month
-
     from {{ ref('int_successful_transaction_events') }} as s
-
     cross join last_completed_month as l
-
-    where
-        s.transaction_month <= l.last_completed_month
+    where s.transaction_month <= l.last_completed_month
 
 ),
-
-
--- ============================================================
--- RETENTION QUALIFICATION
--- ============================================================
---
--- Find every period containing 3 consecutive active
--- completed calendar months.
---
--- ============================================================
 
 retention_streaks as (
 
     select
         m1.user_id,
-
-        m1.transaction_month
-            as qualification_start_month
+        m1.transaction_month as qualification_start_month
 
     from monthly_activity as m1
 
     inner join monthly_activity as m2
         on
             m1.user_id = m2.user_id
-
             and m2.transaction_month = date_add(
                 m1.transaction_month,
                 interval 1 month
@@ -121,7 +59,6 @@ retention_streaks as (
     inner join monthly_activity as m3
         on
             m1.user_id = m3.user_id
-
             and m3.transaction_month = date_add(
                 m1.transaction_month,
                 interval 2 month
@@ -129,52 +66,22 @@ retention_streaks as (
 
 ),
 
-
--- ============================================================
--- LATEST RETENTION QUALIFICATION
--- ============================================================
---
--- If a user loses Retention and later returns, the latest
--- qualifying 3-month streak becomes the new qualification.
---
--- ============================================================
-
 latest_retention_qualification as (
 
     select
         user_id,
-
-        max(
-            qualification_start_month
-        ) as qualification_start_month
+        max(qualification_start_month)
+            as qualification_start_month
 
     from retention_streaks
-
-    group by
-        user_id
+    group by user_id
 
 ),
-
-
--- ============================================================
--- RETENTION EVALUATION
--- ============================================================
---
--- The three qualification months are already known to be
--- active.
---
--- From the month after qualification:
---
---   active completed month -> remains Retained
---   missed completed month -> Retention ends
---
--- ============================================================
 
 retention_evaluation as (
 
     select
         q.user_id,
-
         q.qualification_start_month,
 
         count(
@@ -206,31 +113,42 @@ retention_evaluation as (
     left join monthly_activity as m
         on
             q.user_id = m.user_id
-
             and m.transaction_month = expected_month
 
     group by
         q.user_id,
         q.qualification_start_month
 
+),
+
+retention as (
+
+    select
+        u.user_id,
+
+        coalesce(
+            r.user_id is not null
+            and r.active_completed_months
+                = r.expected_completed_months,
+            false
+        ) as retention_flag
+
+    from {{ ref('stg_users') }} as u
+
+    left join retention_evaluation as r
+        on u.user_id = r.user_id
+
 )
 
-
--- ============================================================
--- FINAL USER RETENTION MODEL
--- ============================================================
-
 select
-    u.user_id,
+    r.user_id,
 
-    coalesce(
-        r.user_id is not null
-        and r.active_completed_months
-            = r.expected_completed_months,
-        false
-    ) as retention_flag
+    case
+        when not a.activation_flag then false
+        else r.retention_flag
+    end as retention_flag
 
-from {{ ref('stg_users') }} as u
+from retention as r
 
-left join retention_evaluation as r
-    on u.user_id = r.user_id
+left join {{ ref('int_activation') }} as a
+    on r.user_id = a.user_id

@@ -2,46 +2,18 @@
 -- USER ENGAGEMENT
 -- ============================================================
 --
--- Purpose:
---   Represent whether the user meets the approved Engagement
---   business definition.
---
--- Grain:
---   One row per user.
---
--- Engagement:
---   At least one successful transaction in 3 of the previous
---   4 completed calendar weeks before the analysis date.
---
--- Successful transaction event logic is provided by:
---   int_successful_transaction_events
---
+-- Engagement logic remains unchanged.
+-- Activation acts as the lifecycle gate:
+-- users who never activated cannot be Engaged.
 -- ============================================================
-
 
 with analysis_date as (
 
     select
         max(created_at) as analysis_date
-
     from {{ ref('stg_transactions') }}
 
 ),
-
-
--- ============================================================
--- ENGAGEMENT
--- ============================================================
---
--- A user is Engaged when they have at least one successful
--- transaction in 3 of the previous 4 completed calendar weeks
--- before the analysis date.
---
--- transaction_week is supplied by the reusable successful
--- transaction events model and represents a Monday-based
--- calendar week.
---
--- ============================================================
 
 engagement as (
 
@@ -54,7 +26,7 @@ engagement as (
 
     from {{ ref('stg_users') }} as u
 
-    cross join analysis_date as a
+    cross join analysis_date as d
 
     left join {{ ref('int_successful_transaction_events') }} as s
         on
@@ -63,7 +35,7 @@ engagement as (
             and s.transaction_week between
                 date_sub(
                     date_trunc(
-                        date(a.analysis_date),
+                        date(d.analysis_date),
                         week (monday)
                     ),
                     interval 4 week
@@ -71,26 +43,25 @@ engagement as (
 
                 and date_sub(
                     date_trunc(
-                        date(a.analysis_date),
+                        date(d.analysis_date),
                         week (monday)
                     ),
                     interval 1 week
                 )
 
-    group by
-        u.user_id
+    group by u.user_id
 
 )
 
-
--- ============================================================
--- FINAL USER ENGAGEMENT MODEL
--- ============================================================
-
 select
+    e.user_id,
 
-    user_id,
+    case
+        when not a.activation_flag then false
+        else e.engagement_flag
+    end as engagement_flag
 
-    engagement_flag
+from engagement as e
 
-from engagement
+left join {{ ref('int_activation') }} as a
+    on e.user_id = a.user_id
