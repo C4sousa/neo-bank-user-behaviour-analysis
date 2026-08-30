@@ -66,9 +66,3 @@ neo-bank-user-behaviour-analysis/
 
 ## Author
 **Ricardo de Sousa** — Product Manager | Data Analytics
-
-## Acknowledgements
-Anonymised banking dataset via Le Wagon Data Analytics programme.
-
-## License
-Educational/portfolio use.
