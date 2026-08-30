@@ -58,10 +58,10 @@ neo-bank-user-behaviour-analysis/
 ```
 
 ## Current Status
-- ✅ **Completed:** data foundation, dbt models (staging/intermediate/marts), core analyses (H5, H6, H7, H10, H11), final presentation.
+- ✅ **Completed:** data foundation, dbt models (staging/intermediate/marts), core analyses (H1 - H15), final presentation.
 
 ## Links
-- **Notion project home (Phases 1–6):** https://app.notion.com/p/ricardodesousa/04-Analysis-Findings-3ba5bf6d971f8076aa4bf6c17d83f7df
+- **Notion project home (Phases 1–6):** https://app.notion.com/p/ricardodesousa/NeoBank-User-Engagement-Analysis-3bd5bf6d971f807ca0d6fdaec4c1ca74
 - **Final presentation:** `images/Presentation_NeoBank_Final_Handover_10min.pdf`
 
 ## Author
