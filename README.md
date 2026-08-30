@@ -1,310 +1,74 @@
 # NeoBank User Engagement Analysis
 
-> Understanding user engagement to improve retention and reduce churn.
+> Understanding user behaviour to improve engagement, retention, and reduce churn.
 
----
-
-## Project Overview
-
-This project investigates user behaviour within an anonymised digital bank to identify the factors that drive user engagement, retention, and churn.
-
-Following a modern analytics engineering workflow, the project transforms raw operational data into analytical models, business insights, and evidence-based product recommendations using SQL, dbt, Python, and business intelligence tools.
-
----
+This project transforms raw banking data into analysis‑ready marts, evidence, and product recommendations using SQL, dbt, Python, and BI visuals. Documentation and decisions live in Notion; this repo holds the reproducible assets.
 
 ## Business Problem
+The NeoBank wants to understand which customer behaviours drive engagement and retention to reduce churn. The objective is to analyse behavioural data and identify the strongest indicators of long‑term activity, then translate evidence into a validation‑first product plan.
 
-The NeoBank wants to understand which customer behaviours drive engagement and retention in order to reduce churn.
+## What's in this repo
+- `data/raw` — source CSVs (users, transactions, notifications, devices)
+- `data/marts` — final analysis‑ready tables (engagement, retention, churn, churn by transaction type)
+- `dbt/` — staging/intermediate/marts models with tests and documentation
+- `python/notebooks` — hypothesis analyses (H5, H6, H7, H10, H11)
+- `images/` — ER diagram, dbt lineage diagram, final presentation PDFs
 
-Rather than relying on assumptions, the objective is to analyse behavioural data and identify the strongest indicators of long-term user activity.
-
----
-
-## Project Objectives
-
-- Identify the drivers of user engagement
-- Identify the drivers of user retention
-- Understand churn behaviour
-- Produce evidence-based product recommendations
-
----
-
-## Dataset
-
-The project analyses an anonymised digital banking dataset containing user, transaction, notification, and device data.
-
-The dataset is based on real-world banking data and has been anonymised for privacy. It was made available through an educational partnership, allowing analysis without exposing commercially sensitive information.
-
-### Tables
-
-- users
-- transactions
-- notifications
-- devices
-
----
+## How to reproduce
+1) Place raw CSVs in `data/raw/`.
+2) From the `dbt` folder, run: `dbt build` (creates intermediate and marts).
+3) Open `python/notebooks/*.ipynb` to re‑run analyses and visuals.
 
 ## Tech Stack
-
-| Category------------| Technology----------------|
-|---------------------|---------------------------|
-| Data Warehouse      | Google BigQuery           |
-| SQL                 | BigQuery SQL              |
-| Data Modelling      | dbt                       |
-| Data Validation     | dbt Tests                 |
-| Documentation       | dbt Documentation         |
-| Analysis            | Python                    |
-| Dashboard           | Looker Studio *(planned)* |
-| Version Control     | Git & GitHub              |
-| Design              | Figma                     |
-
----
-
-## Analytics Workflow
-
-```
-Business Discovery
-        │
-        ▼
-Data Understanding
-        │
-        ▼
-Business Question Validation
-        │
-        ▼
-Data Quality Audit
-        │
-        ▼
-Investigation Prioritisation
-        │
-        ▼
-Data Architecture
-        │
-        ▼
-dbt Models
-        │
-        ▼
-SQL Analysis
-        │
-        ▼
-Python Analysis
-        │
-        ▼
-Business Findings
-        │
-        ▼
-Dashboard
-        │
-        ▼
-Business Recommendations
-```
-
----
-
-## Data Pipeline
-
-```
-RAW
-
-users
-transactions
-notifications
-devices
-
-        │
-        ▼
-
-STAGING
-
-stg_users
-stg_transactions
-stg_notifications
-stg_devices
-
-        │
-        ▼
-
-INTERMEDIATE
-
-int_user_transactions
-
-int_user_notifications
-
-int_user_engagement
-
-        │
-        ▼
-
-MARTS
-
-mart_engagement
-
-mart_retention
-
-mart_churn
-
-        │
-        ▼
-
-Python Analysis
-
-        │
-        ▼
-
-Looker Studio Dashboard
-```
-
----
-
-## dbt Development Workflow
-
-Every dbt model follows the same development process.
-
-```
-Create Model
-      │
-      ▼
-Create Schema YAML
-      │
-      ▼
-Add Documentation
-      │
-      ▼
-Run Tests
-      │
-      ▼
-Validate Results
-      │
-      ▼
-Commit Changes
-```
-
-Each model includes:
-
-- SQL transformation
-- Documentation
-- Column descriptions
-- Built-in dbt tests
-- Relationship tests
-- Accepted values tests
-- Version-controlled SQL
-
----
+- **Data Warehouse:** Google BigQuery
+- **SQL:** BigQuery SQL
+- **Data Modelling:** dbt
+- **Analysis:** Python (notebooks), SQL, Power BI / Looker Studio
+- **Visuals:** Power BI / Looker Studio (exports in `images/`), Python (image exports)
+- **Version Control:** Git & GitHub
+- **Documentation:** Notion (project home)
 
 ## Repository Structure
-
-```
+```text
 neo-bank-user-behaviour-analysis/
-
-README.md
-CHANGELOG.md
-LICENSE
-.gitignore
-
-docs/
-├── analysis-plan/
-├── business/
-├── data-understanding/
-├── findings/
-└── references/
-
-sql/
-├── exploration/
-├── validation/
-├── analysis/
-└── archive/
-
-dbt/
-├── analyses/
-├── documentation/
-├── macros/
-├── models/
-│   ├── staging/
-│   ├── intermediate/
-│   └── marts/
-├── seeds/
-├── snapshots/
-└── tests/
-
-python/
-├── notebooks/
-├── statistics/
-├── visualisations/
-└── utilities/
-
-dashboard/
-├── assets/
-├── exports/
-└── looker-studio/
-
-images/
-├── architecture/
-├── charts/
-├── dashboard/
-├── er-diagram/
-└── presentation/
-
-presentation/
-
-data/
-├── raw/
-├── external/
-└── sample/
+├── data
+│   ├── marts
+│   └── raw
+├── dbt
+│   ├── dbt_project.yml
+│   ├── README.md
+│   └── models
+│       ├── staging
+│       ├── intermediate
+│       └── marts
+├── images
+│   ├── Entity Relationship Diagram (ERD) - Neo Bank.png
+│   ├── Lineage_Data Preparation Architecture (overview).png
+│   ├── Presentation_H15_Country_Churn_5min.pptx
+│   ├── Presentation_NeoBank_10min_Global_Analysis.pptx
+│   └── Presentation_NeoBank_Final_Handover_10min.pdf
+├── python
+│   └── notebooks
+│       ├── H5_merchant_category_engagement.ipynb
+│       ├── H6_engagement_across_countries.ipynb
+│       ├── H7_transaction_frequency_retention.ipynb
+│       ├── H10_notification_frequency_retention.ipynb
+│       └── H11_failed_declined_churn.ipynb
+└── README.md
 ```
-
----
 
 ## Current Status
+- ✅ **Completed:** data foundation, dbt models (staging/intermediate/marts), core analyses (H5, H6, H7, H10, H11), final presentation.
 
-### ✅ Completed
-
-- Business Foundation
-- Business Context
-- Business Questions
-- Data Overview
-- Data Model
-- Data Dictionary
-- Repository Structure
-
-### 🚧 In Progress
-
-- Business Question Validation
-- Data Quality Audit
-- Investigation Prioritisation
-- Data Architecture
-
-### ⏳ Planned
-
-- dbt Models
-- SQL Analysis
-- Python Analysis
-- Dashboard Development
-- Business Recommendations
-
----
-
-## Future Improvements
-
-Potential future enhancements will be identified after completing the analysis and validating the project findings.
-
----
+## Links
+- **Notion project home (Phases 1–6):** https://app.notion.com/p/ricardodesousa/04-Analysis-Findings-3ba5bf6d971f8076aa4bf6c17d83f7df
+- **Final presentation:** `images/Presentation_NeoBank_Final_Handover_10min.pdf`
 
 ## Author
-
-**Ricardo de Sousa**
-
-Product Manager | Data Analytics
-
-Currently transitioning into Product Management while expanding expertise in Analytics Engineering, SQL, dbt, Python, and Business Intelligence.
-
----
+**Ricardo de Sousa** — Product Manager | Data Analytics
 
 ## Acknowledgements
-
-This project uses an anonymised banking dataset made available through the Le Wagon Data Analytics programme.
-
----
+Anonymised banking dataset via Le Wagon Data Analytics programme.
 
 ## License
-
-This repository is intended for portfolio and educational purposes.
+Educational/portfolio use.
